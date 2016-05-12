@@ -1,0 +1,44 @@
+// http://ionicframework.com/docs/v2/theming/
+
+
+// App Shared Imports
+// --------------------------------------------------
+// These are the imports which make up the design of this app.
+// By default each design mode includes these shared imports.
+// App Shared Sass variables belong in app.variables.scss.
+
+.inline-block{
+    display: inline-block;
+}
+
+.show-cursor{
+    cursor: pointer;
+}
+
+.image-container{
+    display: inline-block;
+    padding: 10px;
+}
+
+.image{
+    background-color: grey;
+    height: 100%;
+}
+
+.dm-modal-wrapper {
+    height: 100%;
+    background-color: #010002;
+}
+
+.dm-modal {
+    height: 100%;
+    background-color: #010002;
+}
+
+.dm-image{
+    width: 100%;
+}
+
+.dm-pull-right{
+    float: right;
+}
