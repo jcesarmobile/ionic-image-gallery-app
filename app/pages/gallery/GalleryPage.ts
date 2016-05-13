@@ -1,7 +1,6 @@
 import {Modal, NavController, Page} from "ionic-angular";
 
-import {ModalPage} from "./ModalPage";
-import {FadeModal} from "../../utils/FadeModal";
+import {PhotoViewer} from "./PhotoViewer";
 import {UnsplashItUtil} from "../../utils/UnsplashItUtil";
 import {ImageEntity} from "../../utils/ImageEntity";
 
@@ -9,6 +8,11 @@ import {ImageEntity} from "../../utils/ImageEntity";
   template: `
     <ion-navbar *navbar primary>
         <ion-title>Image Gallery</ion-title>
+        <ion-buttons end>
+            <button (click)="loadGallery()">
+                <ion-icon name="refresh"></ion-icon>
+            </button>
+        </ion-buttons>
     </ion-navbar>
     <ion-content>
       
@@ -29,13 +33,22 @@ export class GalleryPage {
   private NUM_COLUMNS:number = 4;
   private MARGIN:number = 10;
   private IMAGE_SIZE:number;
+  private galleryLoaded:boolean;
   
   constructor(private navController:NavController, private unsplashItUtil:UnsplashItUtil) {
     this.images = []; 
+    this.galleryLoaded = false;
   }
   
   onPageWillEnter(){
     this.IMAGE_SIZE = this.setDimensions();
+    if ( ! this.galleryLoaded ){
+      this.loadGallery();
+    }
+  }
+  
+  loadGallery(){
+    this.galleryLoaded = true;
     this.unsplashItUtil.getListOfImages(this.IMAGE_SIZE).then(imageEntities =>{
       this.images = imageEntities;
     });
@@ -46,7 +59,7 @@ export class GalleryPage {
   }
   
   imageClicked(imageEntity:ImageEntity){
-    let modal = Modal.create(ModalPage, {
+    let modal = Modal.create(PhotoViewer, {
     //let modal = FadeModal.create(ModalPage, {
       imageEntity:imageEntity
     });
