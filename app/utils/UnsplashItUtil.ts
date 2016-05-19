@@ -7,15 +7,13 @@ import {ImageEntity} from "./ImageEntity";
 
 const URL:string = "https://unsplash.it";
 
-
 @Injectable()
 export class UnsplashItUtil {
   constructor(private http: Http) {
   }
 
   getListOfImages(thumbnailSize:number):Promise<ImageEntity[]>{
-    return Promise.resolve([]);
-     /*return this.http.get(`${URL}/list`).map(res => res.json()).toPromise().then(unsplashEntities => {
+    return this.http.get(`${URL}/list`).map(res => res.json()).toPromise().then(unsplashEntities => {
 
         var imageEntities:ImageEntity[] = [];
         unsplashEntities.forEach(unsplashEntity => {
@@ -31,7 +29,6 @@ export class UnsplashItUtil {
         var randomArray = this.shuffleArray(imageEntities.concat([]));
         return randomArray;
      });
-     */
   }
 
   shuffleArray(array):any[]{
