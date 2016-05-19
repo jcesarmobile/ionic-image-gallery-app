@@ -1,4 +1,4 @@
-import {Component, ElementRef, EventEmitter, Output} from 'angular2/core';
+import {Component, ElementRef, EventEmitter, Output} from '@angular/core';
 
 @Component({
   selector: 'swipe-to-close',
@@ -8,7 +8,7 @@ import {Component, ElementRef, EventEmitter, Output} from 'angular2/core';
             height: 100%;
             background-color: #010002;
         }
-      
+
         .stc-content {
             height: 100%;
         }
@@ -23,25 +23,25 @@ import {Component, ElementRef, EventEmitter, Output} from 'angular2/core';
   `,
 })
 export class SwipeToClose{
-    
+
     @Output() dismiss:EventEmitter<any> = new EventEmitter();
     protected initialTouch:TouchCoordinate;
     protected mostRecentTouch:TouchCoordinate;
-    protected TOUCH_DISTANCE_TRAVELED_THRESHOLD:number = .40;
+    protected TOUCH_DISTANCE_TRAVELED_THRESHOLD:number = .50;
 
-    
+
     constructor(public elementRef:ElementRef){
     }
-    
+
     ngAfterViewInit(){
         this.initialTouch = this.mostRecentTouch = null;
     }
-    
+
     touchStart(event:TouchEvent){
         this.initialTouch = new TouchCoordinate(event.touches[0].clientX, event.touches[0].clientY);
         this.mostRecentTouch = this.initialTouch;
     }
-  
+
     touchMove(event:TouchEvent){
         // calculate the difference between the coordinates
         this.mostRecentTouch = new TouchCoordinate(event.touches[0].clientX, event.touches[0].clientY);;
@@ -52,7 +52,7 @@ export class SwipeToClose{
         element.style.transform = `translate3d(0px, ${differenceY}px, 0px)`;
         //parent.style.opacity = `${1.0 - (1.0 * percentageDragged)}`;
     }
-    
+
     touchEnd(event:TouchEvent){
         // figure out if the percentage of the distance traveled exceeds the threshold
         // if it does, dismiss the window,

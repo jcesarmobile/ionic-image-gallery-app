@@ -1,5 +1,5 @@
-import {ElementRef, ViewChild} from "angular2/core";
-import {NavController, NavParams, Page, ViewController} from "ionic-angular";
+import {ElementRef, ViewChild} from "@angular/core";
+import {NavController, NavParams, Page, Transition, TransitionOptions, ViewController} from "ionic-angular";
 
 import {UnsplashItUtil} from "../../utils/UnsplashItUtil";
 import {ImageEntity} from "../../utils/ImageEntity";
@@ -13,11 +13,11 @@ import {SwipeToClose} from "../../components/SwipeToClose";
         .pv-btn-container{
             float: right;
         }
-        
+
         .pv-show-cursor{
             cursor: pointer;
         }
-        
+
         .pv-img{
             width: 100%;
         }
@@ -39,27 +39,27 @@ import {SwipeToClose} from "../../components/SwipeToClose";
   `
 })
 export class PhotoViewer {
-    
+
     private imageDisplayStyle:string;
     private imageEntity:ImageEntity;
-    
-    constructor(private navController:NavController, private navParams:NavParams, private viewController:ViewController){    
+
+    constructor(private navController:NavController, private navParams:NavParams, private viewController:ViewController){
     }
-  
+
     onPageWillEnter(){
         this.imageDisplayStyle = "none";
         this.imageEntity = null;
     }
-    
+
     onPageDidEnter(){
      this.imageEntity = this.navParams.data.imageEntity;
     }
- 
-    
+
+
     dismissView(){
         this.viewController.dismiss();
     }
-    
+
     imageLoaded(event){
         var imageAspectRatio = event.target.height/event.target.width;
         var swipeToCloseElement = (<any>document.querySelector("swipe-to-close")).children[0];
@@ -76,3 +76,21 @@ class TouchCoordinate {
     constructor(public x:number, public y:number){
     }
 }
+
+export const TRANSITION_KEY:string = "twitter-photo-transition";
+
+export class TwitterStylePhotoTransition extends Transition {
+  constructor(enteringView: ViewController, leavingView: ViewController, opts: TransitionOptions) {
+    super(opts);
+
+    console.log("Opts: ", opts);
+    this
+      .element(enteringView.pageRef())
+      .easing('ease')
+      .duration(1000)
+      .fromTo('translateY', '0%', '0%')
+      .fadeIn()
+      .before.addClass('show-page');
+  }
+}
+Transition.register(TRANSITION_KEY, TwitterStylePhotoTransition);

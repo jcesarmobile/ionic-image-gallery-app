@@ -7,7 +7,8 @@ import {getProviders} from "./AppFactory";
 @App({
   template: '<ion-nav [root]="rootPage"></ion-nav>',
   config: {},
-  providers: getProviders()
+  providers: getProviders(),
+  prodMode: true
 })
 export class MyApp {
   rootPage: any = GalleryPage;

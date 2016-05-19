@@ -1,5 +1,5 @@
-import {Injectable} from "angular2/core";
-import {Http} from "angular2/http";
+import {Injectable} from "@angular/core";
+import {Http} from '@angular/http';
 import "rxjs/add/operator/map";
 import "rxjs/add/operator/toPromise";
 
@@ -14,12 +14,12 @@ export class UnsplashItUtil {
   }
 
   getListOfImages(thumbnailSize:number):Promise<ImageEntity[]>{
-      
-     return this.http.get(`${URL}/list`).map(res => res.json()).toPromise().then(unsplashEntities => {
-        
+    return Promise.resolve([]);
+     /*return this.http.get(`${URL}/list`).map(res => res.json()).toPromise().then(unsplashEntities => {
+
         var imageEntities:ImageEntity[] = [];
         unsplashEntities.forEach(unsplashEntity => {
-            var imageEntity = new ImageEntity(unsplashEntity.id, 
+            var imageEntity = new ImageEntity(unsplashEntity.id,
                             `${URL}/${thumbnailSize}?image=${unsplashEntity.id}`,
                             `${URL}/800?image=${unsplashEntity.id}`,
                             `${URL}/2400?image=${unsplashEntity.id}`);
@@ -31,8 +31,9 @@ export class UnsplashItUtil {
         var randomArray = this.shuffleArray(imageEntities.concat([]));
         return randomArray;
      });
+     */
   }
-  
+
   shuffleArray(array):any[]{
     var currentIndex = array.length, temporaryValue, randomIndex;
 
@@ -50,4 +51,3 @@ export class UnsplashItUtil {
     return array;
   }
 }
-
