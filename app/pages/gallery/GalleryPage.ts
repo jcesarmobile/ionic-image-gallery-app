@@ -66,12 +66,13 @@ export class GalleryPage {
     });
     this.navController.present(modal, {
       animation: TRANSITION_KEY,
-      transitionData: {
+      /*transitionData: {
         startX: coordinate.x,
         startY: coordinate.y,
         width: (<any>event.target).clientWidth,
         hieght: (<any>event.target).clientHeight
       }
+      */
     });
   }
 
