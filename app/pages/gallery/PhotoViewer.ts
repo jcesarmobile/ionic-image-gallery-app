@@ -20,6 +20,7 @@ import {SwipeToClose} from "../../components/SwipeToClose";
 
         .pv-img{
             width: 100%;
+            display: inline-block;
         }
       `
   ],
@@ -32,6 +33,7 @@ import {SwipeToClose} from "../../components/SwipeToClose";
                 </button>
             </div>
             <img class="pv-image" [src]="imageEntity?.mediumSizeUrl"/>
+
         </swipe-to-close>
     </ion-content>
   `
@@ -77,42 +79,3 @@ class TouchCoordinate {
     constructor(public x:number, public y:number){
     }
 }
-
-export const TRANSITION_KEY:string = "twitter-photo-transition";
-
-export class TwitterStylePhotoTransition extends Transition {
-  constructor(enteringView: ViewController, leavingView: ViewController, opts: TransitionOptions) {
-    super(opts);
-
-    console.log("Opts: ", opts);
-    console.log("Transition: ", (new Date()).getTime());
-
-    /*
-    this
-      .element(enteringView.pageRef())
-      .easing('ease')
-      .duration(300)
-      .fromTo('translateY', '0%', '0%')
-      //.fadeIn()
-      .before.addClass('show-page');
-      */
-
-
-    let ele = enteringView.pageRef().nativeElement;
-    var image = ele.querySelector(".pv-image");
-    let imageAnimation = new Animation(image);
-    var imageHeight = window.innerWidth;
-    var imageY = window.innerHeight/2 - imageHeight/2;
-
-    imageAnimation.fromTo('translateY', `${opts.transitionData.startY}px`, `${imageY}px`);
-    imageAnimation.fromTo('translateX', `${opts.transitionData.startX}px`, `${0}px`);
-    this
-      .element(enteringView.pageRef())
-      .easing('ease')
-      .duration(300)
-      //.fadeIn()
-      .before.addClass('show-page')
-      .add(imageAnimation);
-  }
-}
-Transition.register(TRANSITION_KEY, TwitterStylePhotoTransition);

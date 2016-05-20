@@ -1,6 +1,8 @@
-import {Modal, NavController, Page} from "ionic-angular";
+import {NavController, Page} from "ionic-angular";
 
-import {PhotoViewer, TRANSITION_KEY} from "./PhotoViewer";
+import {PhotoViewerViewController} from "./PhotoViewerViewController";
+import {PhotoViewer} from "./PhotoViewer";
+import {TRANSITION_IN_KEY} from "./PhotoViewerTransition";
 import {UnsplashItUtil} from "../../utils/UnsplashItUtil";
 import {ImageEntity} from "../../utils/ImageEntity";
 
@@ -59,38 +61,17 @@ export class GalleryPage {
   }
 
   imageClicked(imageEntity:ImageEntity, event:Event){
-    var coordinate = this.getLocationOfTouch(event);
-    let modal = Modal.create(PhotoViewer, {
+    var rect = (<HTMLElement>event.target).getBoundingClientRect();
+    let modal = PhotoViewerViewController.create({
       imageEntity:imageEntity
     });
     this.navController.present(modal, {
-      animation: TRANSITION_KEY,
       transitionData: {
-        startX: coordinate.x,
-        startY: coordinate.y,
-        width: (<any>event.target).clientWidth,
-        height: (<any>event.target).clientHeight
+        startX: rect.left,
+        startY: rect.top,
+        width: rect.width,
+        height: rect.height
       }
     });
-  }
-
-  getLocationOfTouch(event:Event){
-    if ( event instanceof MouseEvent ){
-      let mouseEvent = <MouseEvent> event;
-      return {
-        x: mouseEvent.clientX,
-        y: mouseEvent.clientY
-      };
-    }
-    else{
-      let touchEvent = <TouchEvent> event;
-      if ( touchEvent.touches && touchEvent.touches.length > 0 ){
-        return {
-          x: touchEvent.touches[0].clientX,
-          y: touchEvent.touches[0].clientY
-        };
-      }
-      throw new Error("Could not get touches");
-    }
   }
 }
