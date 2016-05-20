@@ -5,6 +5,7 @@ import {Component, ElementRef, EventEmitter, Output} from '@angular/core';
   styles: [
       `
         .stc-wrapper{
+            display: block;
             height: 100%;
             background-color: #010002;
         }

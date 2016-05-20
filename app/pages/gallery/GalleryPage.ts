@@ -61,18 +61,16 @@ export class GalleryPage {
   imageClicked(imageEntity:ImageEntity, event:Event){
     var coordinate = this.getLocationOfTouch(event);
     let modal = Modal.create(PhotoViewer, {
-    //let modal = FadeModal.create(ModalPage, {
       imageEntity:imageEntity
     });
     this.navController.present(modal, {
       animation: TRANSITION_KEY,
-      /*transitionData: {
+      transitionData: {
         startX: coordinate.x,
         startY: coordinate.y,
         width: (<any>event.target).clientWidth,
-        hieght: (<any>event.target).clientHeight
+        height: (<any>event.target).clientHeight
       }
-      */
     });
   }
 
