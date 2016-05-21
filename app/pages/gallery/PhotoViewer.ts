@@ -19,7 +19,9 @@ import {SwipeToClose} from "../../components/SwipeToClose";
         }
 
         .pv-img{
-            width: 100%;
+            width: 105px;
+            height: 105px;
+
             display: inline-block;
         }
       `
@@ -32,6 +34,7 @@ import {SwipeToClose} from "../../components/SwipeToClose";
                     <ion-icon name="close"></ion-icon>
                 </button>
             </div>
+            <!--<div class="pv-image" style="background-color: blue;"></div>-->
             <img class="pv-image" [src]="imageEntity?.mediumSizeUrl"/>
 
         </swipe-to-close>
@@ -44,17 +47,14 @@ export class PhotoViewer {
     private imageEntity:ImageEntity;
 
     constructor(private navController:NavController, private navParams:NavParams, private viewController:ViewController){
-      console.log("this.navParams.data.imageEntity: ", this.navParams.data.imageEntity);
       this.imageEntity = this.navParams.data.imageEntity;
     }
 
     onPageWillEnter(){
-        console.log("onPageWillEnter: ", (new Date()).getTime());
+
     }
 
     onPageDidEnter(){
-      console.log("On Page Did Enter");
-
     }
 
 
