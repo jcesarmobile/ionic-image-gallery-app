@@ -1,4 +1,4 @@
-import {NavController, Page} from "ionic-angular";
+import {Alert, NavController, Page} from "ionic-angular";
 
 import {PhotoViewerViewController} from "./PhotoViewerViewController";
 import {PhotoViewer} from "./PhotoViewer";
@@ -11,7 +11,7 @@ import {ImageEntity} from "../../utils/ImageEntity";
     <ion-navbar *navbar primary>
         <ion-title>Image Gallery</ion-title>
         <ion-buttons end>
-            <button (click)="loadGallery()">
+            <button (press)="loadGallery()">
                 <ion-icon name="refresh"></ion-icon>
             </button>
         </ion-buttons>
@@ -66,12 +66,18 @@ export class GalleryPage {
       imageEntity:imageEntity
     });
     this.navController.present(modal, {
-      transitionData: {
+      ev: {
         startX: rect.left,
         startY: rect.top,
         width: rect.width,
         height: rect.height
       }
     });
+
+    /*var alert = Alert.create({
+      message : "What up!"
+    });
+    this.navController.present(alert);
+    */
   }
 }
