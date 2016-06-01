@@ -2,9 +2,10 @@ import {ElementRef, ViewChild} from "@angular/core";
 import {Animation, NavController, NavParams, Page, Transition, TransitionOptions, ViewController} from "ionic-angular";
 
 import {getModalDimensions} from "./PhotoViewerTransition";
-import {UnsplashItUtil} from "../../utils/UnsplashItUtil";
-import {ImageEntity} from "../../utils/ImageEntity";
 
+import {ImageEntity} from "../../utils/ImageEntity";
+import {UnsplashItUtil} from "../../utils/UnsplashItUtil";
+import {ViewPortUtil} from "../../utils/ViewPortUtil";
 
 @Page({
   template: `
@@ -28,13 +29,13 @@ import {ImageEntity} from "../../utils/ImageEntity";
 })
 export class PhotoViewer {
 
-    private imageDisplayStyle:string;
     private imageEntity:ImageEntity;
 
     protected initialTouch:TouchCoordinate;
     protected mostRecentTouch:TouchCoordinate;
     protected TOUCH_DISTANCE_TRAVELED_THRESHOLD:number = .50;
     protected yTransformValue:number;
+    protected contentContainerRect:any;
 
     @ViewChild("backdrop") backdrop:ElementRef;
     @ViewChild("wrapper") wrapper:ElementRef;
@@ -43,7 +44,7 @@ export class PhotoViewer {
     @ViewChild("scaledImage") scaledImageEle:ElementRef;
     @ViewChild("nonScaledImage") nonScaledImageEle:ElementRef;
 
-    constructor(private navController:NavController, private navParams:NavParams, private viewController:ViewController){
+    constructor(protected navController:NavController, protected navParams:NavParams, protected viewController:ViewController, protected viewPortUtil:ViewPortUtil){
       this.imageEntity = this.navParams.data.imageEntity;
     }
 
@@ -52,26 +53,30 @@ export class PhotoViewer {
     }
 
     onPageDidEnter(){
-      this.loadLargerImage();
-    }
+      // give a short buffer to make sure the transition is done
+      setTimeout( () => {
+          // DOM READ
+          this.contentContainerRect = this.contentContainer.nativeElement.getBoundingClientRect();
+          // DOM READ, WRITE
+          this.showHighResImage();
+      }, 100);
 
-    loadLargerImage(){
-      let tempImage = <HTMLImageElement> document.createElement("IMG");
-      tempImage.onload = () => {
-        this.showHighResImage();
-      };
-      tempImage.src = this.imageEntity.mediumSizeUrl;
     }
 
     showHighResImage(){
+      // DOM READS
       let parentWidth = this.wrapper.nativeElement.clientWidth;
       let parentHeight = this.wrapper.nativeElement.clientHeight;
-      const SIZE = getModalDimensions().useableWidth;
+      let dimensions = getModalDimensions(this.viewPortUtil.getHeight(), this.viewPortUtil.getWidth());
+      const WIDTH = dimensions.useableWidth;
+      const HEIGHT = dimensions.useableHeight;
+
+      // DOM WRITES
       this.nonScaledImageEle.nativeElement.style.position = "absolute";
-      this.nonScaledImageEle.nativeElement.style.width = `${SIZE}px`;
-      this.nonScaledImageEle.nativeElement.style.height = `${SIZE}px`;
-      this.nonScaledImageEle.nativeElement.style.top = `${Math.floor(parentHeight/2 - SIZE/2)}px`;
-      this.nonScaledImageEle.nativeElement.style.left = `${Math.floor(parentWidth/2 - SIZE/2)}px`;
+      this.nonScaledImageEle.nativeElement.style.width = `${WIDTH}px`;
+      this.nonScaledImageEle.nativeElement.style.height = `${HEIGHT}px`;
+      this.nonScaledImageEle.nativeElement.style.top = `${Math.floor(parentHeight/2 - HEIGHT/2)}px`;
+      this.nonScaledImageEle.nativeElement.style.left = `${Math.floor(parentWidth/2 - WIDTH/2)}px`;
       this.nonScaledImageEle.nativeElement.onload = () => {
         this.scaledImageEle.nativeElement.style.display = "none";
       };
@@ -79,6 +84,7 @@ export class PhotoViewer {
     }
 
     dismissView(removeImageBeforeDismiss){
+        // DOM WRITES
         if ( removeImageBeforeDismiss ){
           this.wrapper.nativeElement.removeChild(this.scaledImageEle.nativeElement);
         }
@@ -86,6 +92,7 @@ export class PhotoViewer {
           this.scaledImageEle.nativeElement.style.display = "";
         }
         this.wrapper.nativeElement.removeChild(this.nonScaledImageEle.nativeElement);
+
         this.viewController.dismiss(null, null, {
           ev: {
             skipImageTransition: removeImageBeforeDismiss
@@ -104,7 +111,7 @@ export class PhotoViewer {
         this.mostRecentTouch = new TouchCoordinate(event.touches[0].clientX, event.touches[0].clientY);
         var previousYTransform = this.yTransformValue;
         this.yTransformValue = this.mostRecentTouch.y - this.initialTouch.y;
-        var percentageDragged = Math.abs(this.yTransformValue)/window.innerHeight;
+        var percentageDragged = Math.abs(this.yTransformValue)/this.viewPortUtil.getHeight();
         this.doMoveAnimation(previousYTransform, this.yTransformValue, percentageDragged);
     }
 
@@ -112,7 +119,7 @@ export class PhotoViewer {
         // figure out if the percentage of the distance traveled exceeds the threshold
         // if it does, dismiss the window,
         // otherwise, reset to the original position
-        let viewportHeight = window.innerHeight;
+        let viewportHeight = this.viewPortUtil.getHeight();
         var differenceY = this.mostRecentTouch.y - this.initialTouch.y;
         var percentageDragged = Math.abs(differenceY)/viewportHeight;
         if ( percentageDragged >= this.TOUCH_DISTANCE_TRAVELED_THRESHOLD ){
@@ -158,29 +165,14 @@ export class PhotoViewer {
       animation.duration(250).easing("ease").add(backdropAnimation).add(buttonAnimation).add(imageAnimation).play();
     }
 
-    animateBackdropFade(percentageDragged){
-      this.backdrop.nativeElement.style.opacity = 1 - (percentageDragged * 1.5);
-    }
-
-    animateBackdropFadeReverse(){
-      let animation = new Animation(this.backdrop.nativeElement);
-      animation.fromTo('opacity', this.backdrop.nativeElement.style.opacity, `1`);
-      animation.easing("ease").duration(250).play();
-      this.backdrop.nativeElement.style.opacity = "1.0";
-    }
-
     animateButtonContainerOut(){
       let animation = new Animation(this.btnContainer.nativeElement);
       animation.fromTo('translateY', `0px`, `-100px`);
       animation.easing("ease").play();
     }
-
-    animationButtonContainerIn(){
-      let animation = new Animation(this.btnContainer.nativeElement);
-      animation.fromTo('translateY', `-100px`, `0px`);
-      animation.easing("ease").play();
-    }
 }
+
+
 
 class TouchCoordinate {
     constructor(public x:number, public y:number){}

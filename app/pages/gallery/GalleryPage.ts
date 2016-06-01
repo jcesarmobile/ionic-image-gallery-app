@@ -4,6 +4,7 @@ import {PhotoViewerViewController} from "./PhotoViewerViewController";
 import {PhotoViewer} from "./PhotoViewer";
 import {TRANSITION_IN_KEY} from "./PhotoViewerTransition";
 import {UnsplashItUtil} from "../../utils/UnsplashItUtil";
+import {ViewPortUtil} from "../../utils/ViewPortUtil";
 import {ImageEntity} from "../../utils/ImageEntity";
 
 @Page({
@@ -37,7 +38,7 @@ export class GalleryPage {
   private IMAGE_SIZE:number;
   private galleryLoaded:boolean;
 
-  constructor(private navController:NavController, private unsplashItUtil:UnsplashItUtil) {
+  constructor(private navController:NavController, private unsplashItUtil:UnsplashItUtil, private viewPortUtil:ViewPortUtil) {
     this.images = [];
     this.galleryLoaded = false;
   }
@@ -57,10 +58,10 @@ export class GalleryPage {
   }
 
   setDimensions(){
-    let screenWidth = window.innerWidth;
+    let screenWidth = this.viewPortUtil.getWidth();
     var potentialNumColumns = Math.floor(screenWidth/120);
     let NUM_COLUMNS = potentialNumColumns > this.MIN_NUM_COLUMNS ? potentialNumColumns : this.MIN_NUM_COLUMNS;
-    return Math.floor(window.innerWidth/NUM_COLUMNS);
+    return Math.floor(screenWidth/NUM_COLUMNS);
   }
 
   imageClicked(imageEntity:ImageEntity, event:Event){
@@ -73,14 +74,10 @@ export class GalleryPage {
         startX: rect.left,
         startY: rect.top,
         width: rect.width,
-        height: rect.height
+        height: rect.height,
+        viewportHeight: this.viewPortUtil.getHeight(),
+        viewportWidth: this.viewPortUtil.getWidth()
       }
     });
-
-    /*var alert = Alert.create({
-      message : "What up!"
-    });
-    this.navController.present(alert);
-    */
   }
 }

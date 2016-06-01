@@ -8,6 +8,7 @@ export class TwitterStylePhotoInTransition extends Transition {
   constructor(enteringView: ViewController, leavingView: ViewController, opts: TransitionOptions) {
     super(opts);
 
+    // DOM READS
     let ele = <HTMLElement> enteringView.pageRef().nativeElement;
     ele.classList.add("show-page");
     let image = <HTMLElement> ele.querySelector(".scaled-image");
@@ -18,18 +19,8 @@ export class TwitterStylePhotoInTransition extends Transition {
     let backdropAnimation = new Animation(backdrop);
     let contentContainerAnimation = new Animation(contentContainer);
 
-    let originalDisplay = image.style.display;
-    image.style.display = "none";
-    image.style.position = "absolute";
-    image.style.top = `${opts.ev.startY}px`;
-    image.style.left = `${opts.ev.startX}px`;
-    image.style.width = `${opts.ev.width}px`;
-    image.style.height = `${opts.ev.height}px`;
-    image.style.display = originalDisplay;
+    var modalDimensions = getModalDimensions(opts.ev.viewportHeight, opts.ev.viewportWidth);
 
-    var modalDimensions = getModalDimensions();
-
-    // figure out the scale to move to
     let scale = modalDimensions.useableWidth/opts.ev.width;
 
     let centeredXOffset = (modalDimensions.totalWidth - modalDimensions.useableWidth)/2;
@@ -50,6 +41,15 @@ export class TwitterStylePhotoInTransition extends Transition {
       xTransform: xTransform,
       yDifference: yDifference
     };
+
+
+    // DOM writes
+    image.style.position = "absolute";
+    image.style.top = `${opts.ev.startY}px`;
+    image.style.left = `${opts.ev.startX}px`;
+    image.style.width = `${opts.ev.width}px`;
+    image.style.height = `${opts.ev.height}px`;
+
     imageAnimation.fromTo('scale', `1.0`, `${scale}`);
     imageAnimation.fromTo('translateX', `${0}px`, `${xTransform}px`);
     imageAnimation.fromTo('translateY', `${0}px`, `${yDifference}px`);
@@ -70,21 +70,21 @@ export class TwitterStylePhotoOutTransition extends Transition {
   constructor(enteringView: ViewController, leavingView: ViewController, opts: TransitionOptions) {
     super(opts);
 
+    // DOM reads
     let ele = leavingView.pageRef().nativeElement;
     let image = ele.querySelector(".scaled-image");
     let backdrop = ele.querySelector(".backdrop");
     let contentContainer = ele.querySelector(".contentContainer");
-    let contentContainerRect = contentContainer.getBoundingClientRect();
     let imageAnimation = new Animation(image);
     let backdropAnimation = new Animation(backdrop);
     let contentContainerAnimation = new Animation(contentContainer);
 
-    var modalDimensions = getModalDimensions();
+    var modalDimensions = getModalDimensions(opts.ev.viewportHeight, opts.ev.viewportWidth);
 
     // figure out the scale to move to
     let scale = modalDimensions.useableWidth/opts.ev.width;
 
-
+    // DOM writes
     if ( !opts.ev.skipImageTransition ){
       imageAnimation.fromTo('scale', `${scale}`, `${1.0}`);
       imageAnimation.fromTo('translateX', `${opts.ev.transitionData.xTransform}px`, `${0}px`);
@@ -100,15 +100,14 @@ export class TwitterStylePhotoOutTransition extends Transition {
   }
 }
 
-export function getModalDimensions(){
-  let width  = window.innerWidth;
-  let height = window.innerHeight;
+// provide these values to avoid a dom read
+export function getModalDimensions(viewportHeight:number, viewportWidth:number){
   const MIN_WIDTH_INSET = 768;
   const MIN_LARGE_HEIGHT_INSET = 768;
   const INSET_MODAL_WIDTH = 700;
   const INSET_MODAL_HEIGHT = 700;
 
-  if ( width >= MIN_WIDTH_INSET && height >= MIN_LARGE_HEIGHT_INSET ){
+  if ( viewportHeight >= MIN_WIDTH_INSET && viewportWidth >= MIN_LARGE_HEIGHT_INSET ){
     return {
       totalWidth: INSET_MODAL_WIDTH,
       totalHeight:INSET_MODAL_HEIGHT,
@@ -117,10 +116,10 @@ export function getModalDimensions(){
     };
   }
   return {
-    totalWidth: width,
-    totalHeight: height,
-    useableWidth: width,
-    useableHeight: height
+    totalWidth: viewportWidth,
+    totalHeight: viewportHeight,
+    useableWidth: viewportWidth,
+    useableHeight: viewportHeight
   };
 }
 
