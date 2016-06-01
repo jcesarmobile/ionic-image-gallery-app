@@ -1,4 +1,5 @@
-import {Alert, NavController, Page} from "ionic-angular";
+import {Component} from "@angular/core";
+import {Alert, NavController} from "ionic-angular";
 
 import {PhotoViewerViewController} from "./PhotoViewerViewController";
 import {PhotoViewer} from "./PhotoViewer";
@@ -6,7 +7,7 @@ import {TRANSITION_IN_KEY} from "./PhotoViewerTransition";
 import {UnsplashItUtil} from "../../utils/UnsplashItUtil";
 import {ImageEntity} from "../../utils/ImageEntity";
 
-@Page({
+@Component({
   template: `
     <ion-navbar *navbar primary>
         <ion-title>Image Gallery</ion-title>
