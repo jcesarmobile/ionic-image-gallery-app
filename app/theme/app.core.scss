@@ -25,10 +25,21 @@
     height: 100%;
 }
 
-.dm-image{
-    width: 100%;
+.contentContainer {
+    height: 100%;
+
+    @media only screen and (min-width: 768px) and (min-height: 768px) {
+      position: absolute;
+      top: calc(50% - (600px/2);
+      left: calc(50% - (600px/2);
+      //background-color: blue;
+      width: 600px;
+      height: 600px;
+    }
 }
 
-.dm-pull-right{
-    float: right;
+.wrapper{
+  position: relative;
+  height: 100%;
+  z-index: 10;
 }

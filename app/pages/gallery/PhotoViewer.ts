@@ -6,59 +6,13 @@ import {ImageEntity} from "../../utils/ImageEntity";
 
 
 @Page({
-  styles: [
-      `
-        .pv-btn-container{
-            position: absolute;
-            top: 0px;
-            left: 0px;
-            right: 0px;
-            background-color: red;
-            pointer-events: none;
-        }
-
-        .pv-show-cursor{
-            cursor: pointer;
-        }
-
-        .pv-img{
-            width: 105px;
-            height: 105px;
-
-            display: inline-block;
-        }
-
-        .wrapper{
-          position: relative;
-          height: 100%;
-          z-index: 10;
-        }
-
-        .stc-wrapper{
-            display: block;
-            height: 100%;
-        }
-
-        .stc-content {
-            height: 100%;
-        }
-
-      `
-  ],
   template: `
     <ion-content style="background-color: transparent;">
         <div class="backdrop" #backdrop></div>
         <div class="wrapper">
-        <div class="pv-btn-container" #btnContainer>
-          <div style="float: right">
-            <button large clear class="pv-show-cursor" (click)="dismissView()">
-                <ion-icon name="close"></ion-icon>
-            </button>
+          <div class="contentContainer" #contentContainer (touchstart)="touchStart($event)" (touchend)="touchEnd($event)"  (touchmove)="touchMove($event)">
           </div>
-        </div>
-          <div class="stc-content" #contentContainer (touchstart)="touchStart($event)" (touchend)="touchEnd($event)"  (touchmove)="touchMove($event)">
-            <img class="pv-image" [src]="imageEntity?.mediumSizeUrl"/>
-          </div>
+          <img class="pv-image" [src]="imageEntity?.mediumSizeUrl"/>
         </div>
     </ion-content>
   `
@@ -164,15 +118,17 @@ export class PhotoViewer {
     }
 
     animateButtonContainerOut(){
-      let animation = new Animation(this.btnContainer.nativeElement);
+      /*let animation = new Animation(this.btnContainer.nativeElement);
       animation.fromTo('translateY', `0px`, `-100px`);
       animation.easing("ease").duration(250).play();
+      */
     }
 
     animationButtonContainerIn(){
-      let animation = new Animation(this.btnContainer.nativeElement);
+      /*let animation = new Animation(this.btnContainer.nativeElement);
       animation.fromTo('translateY', `-100px`, `0px`);
       animation.easing("ease").duration(250).play();
+      */
     }
 }
 

@@ -32,7 +32,7 @@ export class GalleryPage {
 
   private images:ImageEntity[];
   private NUM_IMAGES:number = 500;
-  private NUM_COLUMNS:number = 3;
+  private MIN_NUM_COLUMNS:number = 3;
   private MARGIN:number = 10;
   private IMAGE_SIZE:number;
   private galleryLoaded:boolean;
@@ -57,7 +57,10 @@ export class GalleryPage {
   }
 
   setDimensions(){
-    return Math.floor(window.innerWidth/this.NUM_COLUMNS);
+    let screenWidth = window.innerWidth;
+    var potentialNumColumns = Math.floor(screenWidth/120);
+    let NUM_COLUMNS = potentialNumColumns > this.MIN_NUM_COLUMNS ? potentialNumColumns : this.MIN_NUM_COLUMNS;
+    return Math.floor(window.innerWidth/NUM_COLUMNS);
   }
 
   imageClicked(imageEntity:ImageEntity, event:Event){
