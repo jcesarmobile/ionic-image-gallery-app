@@ -1,5 +1,5 @@
-import {ElementRef, ViewChild} from "@angular/core";
-import {Animation, NavController, NavParams, Page, Transition, TransitionOptions, ViewController} from "ionic-angular";
+import {ElementRef, ViewChild, Component} from "@angular/core";
+import {Animation, NavController, NavParams, Transition, TransitionOptions, ViewController} from "ionic-angular";
 
 import {getModalDimensions} from "./PhotoViewerTransition";
 
@@ -7,7 +7,7 @@ import {ImageEntity} from "../../utils/ImageEntity";
 import {UnsplashItUtil} from "../../utils/UnsplashItUtil";
 import {ViewPortUtil} from "../../utils/ViewPortUtil";
 
-@Page({
+@Component({
   template: `
     <ion-content style="background-color: transparent;">
         <div class="backdrop" #backdrop></div>
