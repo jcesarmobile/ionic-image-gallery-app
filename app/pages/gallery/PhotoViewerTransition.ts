@@ -113,7 +113,7 @@ export class TwitterStylePhotoOutTransition extends Transition {
   }
 }
 
-function getModalDimensions(){
+export function getModalDimensions(){
   let width  = window.innerWidth;
   let height = window.innerHeight;
   const MIN_WIDTH_INSET = 768;

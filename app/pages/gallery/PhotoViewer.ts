@@ -1,6 +1,7 @@
 import {ElementRef, ViewChild} from "@angular/core";
 import {Animation, NavController, NavParams, Page, Transition, TransitionOptions, ViewController} from "ionic-angular";
 
+import {getModalDimensions} from "./PhotoViewerTransition";
 import {UnsplashItUtil} from "../../utils/UnsplashItUtil";
 import {ImageEntity} from "../../utils/ImageEntity";
 
@@ -12,7 +13,7 @@ import {ImageEntity} from "../../utils/ImageEntity";
         <div class="wrapper">
           <div class="contentContainer" #contentContainer (touchstart)="touchStart($event)" (touchend)="touchEnd($event)"  (touchmove)="touchMove($event)">
           </div>
-          <img class="pv-image" [src]="imageEntity?.mediumSizeUrl"/>
+          <img class="pv-image" #image [src]="imageEntity?.mediumSizeUrl"/>
         </div>
     </ion-content>
   `
@@ -29,7 +30,7 @@ export class PhotoViewer {
     @ViewChild("backdrop") backdrop:ElementRef;
     @ViewChild("contentContainer") contentContainer:ElementRef;
     @ViewChild("btnContainer") btnContainer:ElementRef;
-
+    @ViewChild("image") imageEle:ElementRef;
 
     constructor(private navController:NavController, private navParams:NavParams, private viewController:ViewController){
       this.imageEntity = this.navParams.data.imageEntity;
@@ -39,20 +40,25 @@ export class PhotoViewer {
       this.initialTouch = this.mostRecentTouch = null;
     }
 
-    dismissView(){
-        this.viewController.dismiss();
+    onPageDidEnter(){
+      let tempImage = <HTMLImageElement> document.createElement("IMG");
+      tempImage.onload = () => {
+        let parentWidth = this.contentContainer.nativeElement.clientWidth;
+        let parentHeight = this.contentContainer.nativeElement.clientHeight;
+        const SIZE = getModalDimensions().useableWidth;
+        this.imageEle.nativeElement.style.transition = null;
+        this.imageEle.nativeElement.style.transform = null;
+        this.imageEle.nativeElement.style.width = `${SIZE}px`;
+        this.imageEle.nativeElement.style.height = `${SIZE}px`;
+        this.imageEle.nativeElement.style.top = `${Math.floor(parentHeight/2 - SIZE/2)}px`;
+        this.imageEle.nativeElement.style.left = `${Math.floor(parentWidth/2 - SIZE/2)}px`;
+        this.imageEle.nativeElement.src = this.imageEntity.fullSizeUrl;
+      };
+      tempImage.src = this.imageEntity.fullSizeUrl;
     }
 
-    imageLoaded(event){
-        /*var imageAspectRatio = event.target.height/event.target.width;
-        var swipeToCloseElement = (<any>document.querySelector("swipe-to-close")).children[0];
-        var buttonContainer = document.querySelector(".pv-btn-container");
-        var image = <HTMLElement> document.querySelector(".pv-image");
-        var imageHeight = Math.floor(imageAspectRatio * swipeToCloseElement.clientWidth);
-        var imageStartY = swipeToCloseElement.clientHeight/2 - imageHeight/2 - buttonContainer.clientHeight;
-        image.style.transform = `translate3d(0px, ${imageStartY}px, 0px)`;
-        this.imageDisplayStyle = "inline";
-        */
+    dismissView(){
+        this.viewController.dismiss();
     }
 
     touchStart(event){
@@ -66,7 +72,7 @@ export class PhotoViewer {
         this.mostRecentTouch = new TouchCoordinate(event.touches[0].clientX, event.touches[0].clientY);;
         var differenceY = this.mostRecentTouch.y - this.initialTouch.y;
         var percentageDragged = Math.abs(differenceY)/window.innerHeight;
-        this.contentContainer.nativeElement.style.transform = `translate3d(0px, ${differenceY}px, 0px)`;
+        this.imageEle.nativeElement.style.transform = `translate3d(0px, ${differenceY}px, 0px)`;
         this.animateBackdropFade(percentageDragged);
     }
 
@@ -81,16 +87,16 @@ export class PhotoViewer {
             // throw the window away and dismiss
             dismiss = true;
             if ( differenceY < 0 ){
-                this.contentContainer.nativeElement.style.transform = `translate3d(0px, ${-window.innerHeight - 20}px, 0px)`;
+                this.imageEle.nativeElement.style.transform = `translate3d(0px, ${-window.innerHeight - 20}px, 0px)`;
             }
             else{
-                this.contentContainer.nativeElement.style.transform = `translate3d(0px, ${window.innerHeight + 20}px, 0px)`;
+                this.imageEle.nativeElement.style.transform = `translate3d(0px, ${window.innerHeight + 20}px, 0px)`;
             }
-            this.contentContainer.nativeElement.style.transition = `300ms ease`;
+            this.imageEle.nativeElement.style.transition = `300ms ease`;
         }
         else{
-            this.contentContainer.nativeElement.style.transform = `translate3d(0px, 0px, 0px)`;
-            this.contentContainer.nativeElement.style.transition = `250ms ease`;
+            this.imageEle.nativeElement.style.transform = `translate3d(0px, 0px, 0px)`;
+            this.imageEle.nativeElement.style.transition = `250ms ease`;
             //parent.style.opacity = `1.0`;
             this.animationButtonContainerIn();
             this.animateBackdropFadeReverse();
@@ -99,7 +105,7 @@ export class PhotoViewer {
             if ( dismiss ){
                 this.dismissView();
             }
-            this.contentContainer.nativeElement.style.transition = null;
+            this.imageEle.nativeElement.style.transition = null;
         }, 220);
     }
 
