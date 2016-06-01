@@ -30,10 +30,10 @@
 
     @media only screen and (min-width: 768px) and (min-height: 768px) {
       position: absolute;
-      top: calc(50% - (600px/2);
-      left: calc(50% - (600px/2);
-      width: 600px;
-      height: 600px;
+      top: calc(50% - (700px/2);
+      left: calc(50% - (700px/2);
+      width: 700px;
+      height: 700px;
     }
 }
 
@@ -41,4 +41,16 @@
   position: relative;
   height: 100%;
   z-index: 10;
+}
+
+.btn-container-wrapper{
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 50px;
+}
+
+.btn-container{
+  float: right;
 }

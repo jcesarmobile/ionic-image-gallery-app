@@ -20,7 +20,7 @@ export class UnsplashItUtil {
             var imageEntity = new ImageEntity(unsplashEntity.id,
                             `${URL}/${thumbnailSize}?image=${unsplashEntity.id}`,
                             `${URL}/800?image=${unsplashEntity.id}`,
-                            `${URL}/2400?image=${unsplashEntity.id}`);
+                            `${URL}/2000?image=${unsplashEntity.id}`);
             imageEntities.push(imageEntity);
         });
         return imageEntities;

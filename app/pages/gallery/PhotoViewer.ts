@@ -10,10 +10,18 @@ import {ImageEntity} from "../../utils/ImageEntity";
   template: `
     <ion-content style="background-color: transparent;">
         <div class="backdrop" #backdrop></div>
-        <div class="wrapper">
+        <div class="wrapper" #wrapper>
+          <div class="btn-container-wrapper" #btnContainer>
+            <div class="btn-container">
+              <button large clear class="pv-show-cursor" (click)="dismissView()">
+                <ion-icon name="close"></ion-icon>
+              </button>
+            </div>
+          </div>
           <div class="contentContainer" #contentContainer (touchstart)="touchStart($event)" (touchend)="touchEnd($event)"  (touchmove)="touchMove($event)">
           </div>
-          <img class="pv-image" #image [src]="imageEntity?.mediumSizeUrl"/>
+          <img class="scaled-image" #scaledImage [src]="imageEntity?.mediumSizeUrl" style="pointer-events: none"/>
+          <img class="non-scaled-image" #nonScaledImage style="pointer-events: none"/>
         </div>
     </ion-content>
   `
@@ -26,11 +34,14 @@ export class PhotoViewer {
     protected initialTouch:TouchCoordinate;
     protected mostRecentTouch:TouchCoordinate;
     protected TOUCH_DISTANCE_TRAVELED_THRESHOLD:number = .50;
+    protected yTransformValue:number;
 
     @ViewChild("backdrop") backdrop:ElementRef;
+    @ViewChild("wrapper") wrapper:ElementRef;
     @ViewChild("contentContainer") contentContainer:ElementRef;
     @ViewChild("btnContainer") btnContainer:ElementRef;
-    @ViewChild("image") imageEle:ElementRef;
+    @ViewChild("scaledImage") scaledImageEle:ElementRef;
+    @ViewChild("nonScaledImage") nonScaledImageEle:ElementRef;
 
     constructor(private navController:NavController, private navParams:NavParams, private viewController:ViewController){
       this.imageEntity = this.navParams.data.imageEntity;
@@ -41,24 +52,45 @@ export class PhotoViewer {
     }
 
     onPageDidEnter(){
-      let tempImage = <HTMLImageElement> document.createElement("IMG");
-      tempImage.onload = () => {
-        let parentWidth = this.contentContainer.nativeElement.clientWidth;
-        let parentHeight = this.contentContainer.nativeElement.clientHeight;
-        const SIZE = getModalDimensions().useableWidth;
-        this.imageEle.nativeElement.style.transition = null;
-        this.imageEle.nativeElement.style.transform = null;
-        this.imageEle.nativeElement.style.width = `${SIZE}px`;
-        this.imageEle.nativeElement.style.height = `${SIZE}px`;
-        this.imageEle.nativeElement.style.top = `${Math.floor(parentHeight/2 - SIZE/2)}px`;
-        this.imageEle.nativeElement.style.left = `${Math.floor(parentWidth/2 - SIZE/2)}px`;
-        this.imageEle.nativeElement.src = this.imageEntity.fullSizeUrl;
-      };
-      tempImage.src = this.imageEntity.fullSizeUrl;
+      this.loadLargerImage();
     }
 
-    dismissView(){
-        this.viewController.dismiss();
+    loadLargerImage(){
+      let tempImage = <HTMLImageElement> document.createElement("IMG");
+      tempImage.onload = () => {
+        this.showHighResImage();
+      };
+      tempImage.src = this.imageEntity.mediumSizeUrl;
+    }
+
+    showHighResImage(){
+      let parentWidth = this.wrapper.nativeElement.clientWidth;
+      let parentHeight = this.wrapper.nativeElement.clientHeight;
+      const SIZE = getModalDimensions().useableWidth;
+      this.nonScaledImageEle.nativeElement.style.position = "absolute";
+      this.nonScaledImageEle.nativeElement.style.width = `${SIZE}px`;
+      this.nonScaledImageEle.nativeElement.style.height = `${SIZE}px`;
+      this.nonScaledImageEle.nativeElement.style.top = `${Math.floor(parentHeight/2 - SIZE/2)}px`;
+      this.nonScaledImageEle.nativeElement.style.left = `${Math.floor(parentWidth/2 - SIZE/2)}px`;
+      this.nonScaledImageEle.nativeElement.onload = () => {
+        this.scaledImageEle.nativeElement.style.display = "none";
+      };
+      this.nonScaledImageEle.nativeElement.src = this.imageEntity.mediumSizeUrl;
+    }
+
+    dismissView(removeImageBeforeDismiss){
+        if ( removeImageBeforeDismiss ){
+          this.wrapper.nativeElement.removeChild(this.scaledImageEle.nativeElement);
+        }
+        else{
+          this.scaledImageEle.nativeElement.style.display = "";
+        }
+        this.wrapper.nativeElement.removeChild(this.nonScaledImageEle.nativeElement);
+        this.viewController.dismiss(null, null, {
+          ev: {
+            skipImageTransition: removeImageBeforeDismiss
+          }
+        });
     }
 
     touchStart(event){
@@ -69,72 +101,84 @@ export class PhotoViewer {
 
     touchMove(event){
         // calculate the difference between the coordinates
-        this.mostRecentTouch = new TouchCoordinate(event.touches[0].clientX, event.touches[0].clientY);;
-        var differenceY = this.mostRecentTouch.y - this.initialTouch.y;
-        var percentageDragged = Math.abs(differenceY)/window.innerHeight;
-        this.imageEle.nativeElement.style.transform = `translate3d(0px, ${differenceY}px, 0px)`;
-        this.animateBackdropFade(percentageDragged);
+        this.mostRecentTouch = new TouchCoordinate(event.touches[0].clientX, event.touches[0].clientY);
+        var previousYTransform = this.yTransformValue;
+        this.yTransformValue = this.mostRecentTouch.y - this.initialTouch.y;
+        var percentageDragged = Math.abs(this.yTransformValue)/window.innerHeight;
+        this.doMoveAnimation(previousYTransform, this.yTransformValue, percentageDragged);
     }
 
     touchEnd(event){
         // figure out if the percentage of the distance traveled exceeds the threshold
         // if it does, dismiss the window,
         // otherwise, reset to the original position
+        let viewportHeight = window.innerHeight;
         var differenceY = this.mostRecentTouch.y - this.initialTouch.y;
-        var percentageDragged = Math.abs(differenceY)/window.innerHeight;
-        var dismiss = false;
+        var percentageDragged = Math.abs(differenceY)/viewportHeight;
         if ( percentageDragged >= this.TOUCH_DISTANCE_TRAVELED_THRESHOLD ){
-            // throw the window away and dismiss
-            dismiss = true;
-            if ( differenceY < 0 ){
-                this.imageEle.nativeElement.style.transform = `translate3d(0px, ${-window.innerHeight - 20}px, 0px)`;
-            }
-            else{
-                this.imageEle.nativeElement.style.transform = `translate3d(0px, ${window.innerHeight + 20}px, 0px)`;
-            }
-            this.imageEle.nativeElement.style.transition = `300ms ease`;
+            this.doSwipeToDismissAnimation(viewportHeight, differenceY);
         }
         else{
-            this.imageEle.nativeElement.style.transform = `translate3d(0px, 0px, 0px)`;
-            this.imageEle.nativeElement.style.transition = `250ms ease`;
-            //parent.style.opacity = `1.0`;
-            this.animationButtonContainerIn();
-            this.animateBackdropFadeReverse();
+            this.doResetAnimation();
         }
-        setTimeout(() => {
-            if ( dismiss ){
-                this.dismissView();
-            }
-            this.imageEle.nativeElement.style.transition = null;
-        }, 220);
+
+    }
+
+    doSwipeToDismissAnimation(viewPortHeight:number, differenceY:number){
+      let animation = new Animation(this.nonScaledImageEle);
+      if ( differenceY < 0 ){
+        animation.fromTo("translateY", `${this.yTransformValue}px`, `${0 - viewPortHeight - 20}px`);
+      }
+      else{
+        animation.fromTo("translateY", `${this.yTransformValue}px`, `${viewPortHeight + 20}px`);
+      }
+      animation.onFinish( () => {
+        this.dismissView(true);
+      });
+      animation.duration(300).easing("ease").play();
+    }
+
+    doMoveAnimation(previousYValue:number, newYalue:number, percentDragged:number){
+      let animation = new Animation(this.backdrop);
+      let backdropAnimation = new Animation(this.backdrop);
+      backdropAnimation.fromTo("opacity", this.backdrop.nativeElement.style.opacity, `${1 - (percentDragged * 1.25)}`);
+      let imageAnimation = new Animation(this.nonScaledImageEle);
+      imageAnimation.fromTo("translateY", `${previousYValue}px`, `${newYalue}px`);
+      animation.add(backdropAnimation).add(imageAnimation).play();
+    }
+
+    doResetAnimation(){
+      let animation = new Animation(this.backdrop);
+      let backdropAnimation = new Animation(this.backdrop);
+      backdropAnimation.fromTo("opacity", this.backdrop.nativeElement.style.opacity, "1.0");
+      let buttonAnimation = new Animation(this.btnContainer);
+      buttonAnimation.fromTo('translateY', `-100px`, `0px`);
+      let imageAnimation = new Animation(this.nonScaledImageEle);
+      imageAnimation.fromTo("translateY", `${this.yTransformValue}px`, `0px`);
+      animation.duration(250).easing("ease").add(backdropAnimation).add(buttonAnimation).add(imageAnimation).play();
     }
 
     animateBackdropFade(percentageDragged){
-      /*let animation = new Animation(this.backdrop.nativeElement);
-      animation.fromTo('opacity', this.backdrop.nativeElement.style.opacity, `0 - ${percentageDragged}`);
-      animation.play();
-      */
-      this.backdrop.nativeElement.style.opacity = 1 - (percentageDragged * 2.0);
+      this.backdrop.nativeElement.style.opacity = 1 - (percentageDragged * 1.5);
     }
 
     animateBackdropFadeReverse(){
       let animation = new Animation(this.backdrop.nativeElement);
       animation.fromTo('opacity', this.backdrop.nativeElement.style.opacity, `1`);
       animation.easing("ease").duration(250).play();
+      this.backdrop.nativeElement.style.opacity = "1.0";
     }
 
     animateButtonContainerOut(){
-      /*let animation = new Animation(this.btnContainer.nativeElement);
+      let animation = new Animation(this.btnContainer.nativeElement);
       animation.fromTo('translateY', `0px`, `-100px`);
-      animation.easing("ease").duration(250).play();
-      */
+      animation.easing("ease").play();
     }
 
     animationButtonContainerIn(){
-      /*let animation = new Animation(this.btnContainer.nativeElement);
+      let animation = new Animation(this.btnContainer.nativeElement);
       animation.fromTo('translateY', `-100px`, `0px`);
-      animation.easing("ease").duration(250).play();
-      */
+      animation.easing("ease").play();
     }
 }
 
