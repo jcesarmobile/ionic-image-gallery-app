@@ -10,7 +10,7 @@ import {ViewPortUtil} from "../../utils/ViewPortUtil";
 @Component({
   template: `
     <ion-content style="background-color: transparent;">
-        <div class="backdrop" #backdrop></div>
+        <ion-backdrop #backdrop></ion-backdrop>
         <div class="wrapper" #wrapper>
           <div class="btn-container-wrapper" #btnContainer>
             <div class="btn-container">

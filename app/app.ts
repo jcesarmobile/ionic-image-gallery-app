@@ -11,7 +11,6 @@ import {TRANSITION_IN_KEY, TRANSITION_OUT_KEY} from "./pages/gallery/PhotoViewer
 @Component({
   template: '<ion-nav [root]="rootPage"></ion-nav>',
   providers: getProviders(),
-  //prodMode: true
 })
 export class MyApp {
   rootPage: any = GalleryPage;
@@ -25,5 +24,6 @@ export class MyApp {
 
 ionicBootstrap(MyApp, null, {
   photoViewerEnter: TRANSITION_IN_KEY,
-  photoViewerLeave: TRANSITION_OUT_KEY
+  photoViewerLeave: TRANSITION_OUT_KEY,
+  prodMode: true
 })

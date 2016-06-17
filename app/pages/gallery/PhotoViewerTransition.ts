@@ -12,7 +12,7 @@ export class TwitterStylePhotoInTransition extends Transition {
     let ele = <HTMLElement> enteringView.pageRef().nativeElement;
     ele.classList.add("show-page");
     let image = <HTMLElement> ele.querySelector(".scaled-image");
-    let backdrop = ele.querySelector(".backdrop");
+    let backdrop = ele.querySelector("ion-backdrop");
     let contentContainer = ele.querySelector(".contentContainer");
     let contentContainerRect = contentContainer.getBoundingClientRect();
     let imageAnimation = new Animation(image);
@@ -73,7 +73,7 @@ export class TwitterStylePhotoOutTransition extends Transition {
     // DOM reads
     let ele = leavingView.pageRef().nativeElement;
     let image = ele.querySelector(".scaled-image");
-    let backdrop = ele.querySelector(".backdrop");
+    let backdrop = ele.querySelector("ion-backdrop");
     let contentContainer = ele.querySelector(".contentContainer");
     let imageAnimation = new Animation(image);
     let backdropAnimation = new Animation(backdrop);
