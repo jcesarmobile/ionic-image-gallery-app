@@ -59,7 +59,7 @@ export class TwitterStylePhotoInTransition extends Transition {
     this
       .element(enteringView.pageRef())
       .easing('ease')
-      .duration(400)
+      .duration(300)
       .before.addClass('show-page')
       .add(imageAnimation)
       .add(backdropAnimation)

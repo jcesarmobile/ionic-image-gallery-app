@@ -101,18 +101,27 @@ export class PhotoViewer {
         });
     }
 
-    doSwipeToDismissAnimation(viewPortHeight:number, differenceY:number, newYValue:number){
+    doSwipeToDismissAnimation(viewPortHeight:number, differenceY:number, newYValue:number, velocity:number){
       let animation = new Animation(this.nonScaledImageEle);
+      let to: number;
       if ( differenceY < 0 ){
-        animation.fromTo("translateY", `${newYValue}px`, `${0 - viewPortHeight - 20}px`);
+        to = 0 - viewPortHeight - 20;
+        animation.fromTo("translateY", `${newYValue}px`, `${to}px`);
       }
       else{
-        animation.fromTo("translateY", `${newYValue}px`, `${viewPortHeight + 20}px`);
+        to = viewPortHeight + 20;
+        animation.fromTo("translateY", `${newYValue}px`, `${to}px`);
       }
       animation.onFinish( () => {
         this.dismissView(true);
       });
-      animation.duration(300).easing("ease").play();
+      let distanceTraveled = Math.abs(to - newYValue);
+      let time = distanceTraveled/velocity;
+      console.log("Time: ", time);
+      if ( time > 300 ){
+        time = 300;
+      }
+      animation.duration(time).easing("ease").play();
     }
 
     doMoveAnimation(previousYValue:number, newYalue:number, percentDragged:number){
@@ -146,11 +155,11 @@ class CustomDragGesture extends DragGesture{
 
   protected initialTouch:TouchCoordinate;
   protected mostRecentTouch:TouchCoordinate;
-  protected TOUCH_DISTANCE_TRAVELED_THRESHOLD:number = .50;
+  protected TOUCH_DISTANCE_TRAVELED_THRESHOLD:number = .40;
   protected yTransformValue:number;
 
   constructor(element: ElementRef, protected delegate:PhotoViewer, protected viewPortUtil: ViewPortUtil){
-    super(element.nativeElement, {direction: 'y'});
+    super(element.nativeElement, {direction: 'x'});
   }
 
   onDragStart(event:any): boolean{
@@ -178,8 +187,8 @@ class CustomDragGesture extends DragGesture{
     let viewportHeight = this.viewPortUtil.getHeight();
     var differenceY = this.mostRecentTouch.y - this.initialTouch.y;
     var percentageDragged = Math.abs(differenceY)/viewportHeight;
-    if ( yVelocity > .70 || percentageDragged >= this.TOUCH_DISTANCE_TRAVELED_THRESHOLD ){
-        this.delegate.doSwipeToDismissAnimation(viewportHeight, differenceY, this.yTransformValue);
+    if ( yVelocity > .2 || percentageDragged >= this.TOUCH_DISTANCE_TRAVELED_THRESHOLD ){
+        this.delegate.doSwipeToDismissAnimation(viewportHeight, differenceY, this.yTransformValue, yVelocity);
     }
     else{
         this.delegate.doResetAnimation(this.yTransformValue);
