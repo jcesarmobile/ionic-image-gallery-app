@@ -4,6 +4,8 @@ import {StatusBar} from 'ionic-native';
 import {GalleryPage} from './pages/gallery/GalleryPage';
 import {getProviders} from "./AppFactory";
 
+import {TestPage} from "./pages/TestPage";
+
 import {TRANSITION_IN_KEY, TRANSITION_OUT_KEY} from "./pages/gallery/PhotoViewerTransition";
 
 //import 'rxjs/Rx';
