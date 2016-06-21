@@ -1,9 +1,9 @@
 import {Component} from "@angular/core";
 import {Alert, NavController} from "ionic-angular";
 
-import {PhotoViewerViewController} from "./PhotoViewerViewController";
-import {PhotoViewer} from "./PhotoViewer";
-import {TRANSITION_IN_KEY} from "./PhotoViewerTransition";
+import {PhotoViewerViewController} from "../viewer/PhotoViewerViewController";
+import {PhotoViewer} from "../viewer/PhotoViewer";
+import {TRANSITION_IN_KEY} from "../viewer/PhotoViewerTransition";
 import {UnsplashItUtil} from "../../utils/UnsplashItUtil";
 import {ViewPortUtil} from "../../utils/ViewPortUtil";
 import {ImageEntity} from "../../utils/ImageEntity";

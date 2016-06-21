@@ -7,6 +7,10 @@ import {ImageEntity} from "../../utils/ImageEntity";
 import {UnsplashItUtil} from "../../utils/UnsplashItUtil";
 import {ViewPortUtil} from "../../utils/ViewPortUtil";
 
+import {GestureDirection} from "../../utils/gestures/gesture-direction";
+import {DragGestureRecognizer} from "../../utils/gestures/drag-gesture-recognizer";
+import {DragGestureRecognizerProvider} from "../../utils/gestures/drag-gesture-recognizer-provider";
+
 @Component({
   template: `
     <ion-content style="background-color: transparent;">
@@ -32,7 +36,16 @@ export class PhotoViewer {
     private imageEntity:ImageEntity;
 
     protected contentContainerRect:any;
-    protected dragGesture: DragGesture;
+    protected dragGesture: DragGestureRecognizer;
+
+    protected initialTouch:TouchCoordinate;
+    protected mostRecentTouch:TouchCoordinate;
+    protected TOUCH_DISTANCE_TRAVELED_THRESHOLD:number = .40;
+    protected yTransformValue:number;
+
+    protected onPanStartSubscription: any;
+    protected onPanMoveSubscription: any;
+    protected onPanEndSubscription: any;
 
     @ViewChild("backdrop") backdrop:ElementRef;
     @ViewChild("wrapper") wrapper:ElementRef;
@@ -41,13 +54,17 @@ export class PhotoViewer {
     @ViewChild("scaledImage") scaledImageEle:ElementRef;
     @ViewChild("nonScaledImage") nonScaledImageEle:ElementRef;
 
-    constructor(protected navController:NavController, protected navParams:NavParams, protected viewController:ViewController, protected viewPortUtil:ViewPortUtil){
+    constructor(protected navController:NavController, protected navParams:NavParams, protected viewController:ViewController, protected viewPortUtil:ViewPortUtil, protected dragGestureRecognizerProvider:DragGestureRecognizerProvider){
       this.imageEntity = this.navParams.data.imageEntity;
     }
 
     onPageWillEnter(){
-      this.dragGesture = new CustomDragGesture(this.contentContainer, this, this.viewPortUtil);
+      //this.dragGesture = new CustomDragGesture(this.contentContainer, this, this.viewPortUtil);
+      this.dragGesture = this.dragGestureRecognizerProvider.getGestureRecognizer(this.contentContainer, {threshold: 1, direction: GestureDirection.ALL});
       this.dragGesture.listen();
+      this.onPanStartSubscription = this.dragGesture.onPanStart.subscribe(event => this.onDragStart(event));
+      this.onPanMoveSubscription = this.dragGesture.onPanMove.subscribe(event => this.onDrag(event));
+      this.onPanEndSubscription = this.dragGesture.onPanEnd.subscribe(event => this.onDragEnd(event));
     }
 
     onPageDidEnter(){
@@ -63,6 +80,9 @@ export class PhotoViewer {
     onPageWillLeave(){
       this.dragGesture.unlisten();
       this.dragGesture = null;
+      this.onPanStartSubscription();
+      this.onPanMoveSubscription();
+      this.onPanEndSubscription();
     }
 
     showHighResImage(){
@@ -102,7 +122,7 @@ export class PhotoViewer {
     }
 
     doSwipeToDismissAnimation(viewPortHeight:number, differenceY:number, newYValue:number, velocity:number){
-      let animation = new Animation(this.nonScaledImageEle);
+      let animation = new Animation(this.nonScaledImageEle, {renderDelay:0 });
       let to: number;
       if ( differenceY < 0 ){
         to = 0 - viewPortHeight - 20;
@@ -125,79 +145,62 @@ export class PhotoViewer {
     }
 
     doMoveAnimation(previousYValue:number, newYalue:number, percentDragged:number){
-      let animation = new Animation(this.backdrop);
-      let backdropAnimation = new Animation(this.backdrop);
+      let animation = new Animation(this.backdrop, {renderDelay: 0});
+      let backdropAnimation = new Animation(this.backdrop, {renderDelay: 0});
       backdropAnimation.fromTo("opacity", this.backdrop.nativeElement.style.opacity, `${1 - (percentDragged * 1.25)}`);
-      let imageAnimation = new Animation(this.nonScaledImageEle);
+      let imageAnimation = new Animation(this.nonScaledImageEle, {renderDelay: 0});
       imageAnimation.fromTo("translateY", `${previousYValue}px`, `${newYalue}px`);
       animation.add(backdropAnimation).add(imageAnimation).play();
     }
 
     doResetAnimation(newYValue:number){
-      let animation = new Animation(this.backdrop);
-      let backdropAnimation = new Animation(this.backdrop);
+      let animation = new Animation(this.backdrop, {renderDelay: 0});
+      let backdropAnimation = new Animation(this.backdrop, {renderDelay: 0});
       backdropAnimation.fromTo("opacity", this.backdrop.nativeElement.style.opacity, "1.0");
-      let buttonAnimation = new Animation(this.btnContainer);
+      let buttonAnimation = new Animation(this.btnContainer, {renderDelay: 0});
       buttonAnimation.fromTo('translateY', `-100px`, `0px`);
-      let imageAnimation = new Animation(this.nonScaledImageEle);
+      let imageAnimation = new Animation(this.nonScaledImageEle, {renderDelay: 0});
       imageAnimation.fromTo("translateY", `${newYValue}px`, `0px`);
       animation.duration(250).easing("ease").add(backdropAnimation).add(buttonAnimation).add(imageAnimation).play();
     }
 
     animateButtonContainerOut(){
-      let animation = new Animation(this.btnContainer.nativeElement);
+      let animation = new Animation(this.btnContainer.nativeElement, {renderDelay: 0});
       animation.fromTo('translateY', `0px`, `-100px`);
       animation.easing("ease").play();
     }
-}
 
-class CustomDragGesture extends DragGesture{
-
-  protected initialTouch:TouchCoordinate;
-  protected mostRecentTouch:TouchCoordinate;
-  protected TOUCH_DISTANCE_TRAVELED_THRESHOLD:number = .40;
-  protected yTransformValue:number;
-
-  constructor(element: ElementRef, protected delegate:PhotoViewer, protected viewPortUtil: ViewPortUtil){
-    super(element.nativeElement, {direction: 'x'});
-  }
-
-  onDragStart(event:any): boolean{
-    this.initialTouch = new TouchCoordinate(event.center.x, event.center.y);
-    this.mostRecentTouch = this.initialTouch;
-    this.delegate.animateButtonContainerOut();
-    return true;
-  }
-
-  onDrag(event:any): boolean{
-    // calculate the difference between the coordinates
-    this.mostRecentTouch = new TouchCoordinate(event.center.x, event.center.y);
-    var previousYTransform = this.yTransformValue;
-    this.yTransformValue = this.mostRecentTouch.y - this.initialTouch.y;
-    var percentageDragged = Math.abs(this.yTransformValue)/this.viewPortUtil.getHeight();
-    this.delegate.doMoveAnimation(previousYTransform, this.yTransformValue, percentageDragged);
-    return true;
-  }
-
-  onDragEnd(event:any): boolean{
-    // figure out if the percentage of the distance traveled exceeds the threshold
-    // if it does, dismiss the window,
-    // otherwise, reset to the original position
-    let yVelocity = Math.abs(event.overallVelocityY);
-    let viewportHeight = this.viewPortUtil.getHeight();
-    var differenceY = this.mostRecentTouch.y - this.initialTouch.y;
-    var percentageDragged = Math.abs(differenceY)/viewportHeight;
-    if ( yVelocity > .2 || percentageDragged >= this.TOUCH_DISTANCE_TRAVELED_THRESHOLD ){
-        this.delegate.doSwipeToDismissAnimation(viewportHeight, differenceY, this.yTransformValue, yVelocity);
-    }
-    else{
-        this.delegate.doResetAnimation(this.yTransformValue);
+    onDragStart(event:HammerInput):void{
+      this.initialTouch = new TouchCoordinate(event.center.x, event.center.y);
+      this.mostRecentTouch = this.initialTouch;
+      this.animateButtonContainerOut();
     }
 
-    return true;
-  }
-}
+    onDrag(event:HammerInput):void{
+      // calculate the difference between the coordinates
+      this.mostRecentTouch = new TouchCoordinate(event.center.x, event.center.y);
+      var previousYTransform = this.yTransformValue;
+      this.yTransformValue = this.mostRecentTouch.y - this.initialTouch.y;
+      var percentageDragged = Math.abs(this.yTransformValue)/this.viewPortUtil.getHeight();
+      this.doMoveAnimation(previousYTransform, this.yTransformValue, percentageDragged);
+    }
 
+    onDragEnd(event:HammerInput):void{
+      // figure out if the percentage of the distance traveled exceeds the threshold
+      // if it does, dismiss the window,
+      // otherwise, reset to the original position
+      let yVelocity = Math.abs(event.velocity);
+      let viewportHeight = this.viewPortUtil.getHeight();
+      var differenceY = this.mostRecentTouch.y - this.initialTouch.y;
+      var percentageDragged = Math.abs(differenceY)/viewportHeight;
+      if ( yVelocity > .2 || percentageDragged >= this.TOUCH_DISTANCE_TRAVELED_THRESHOLD ){
+          this.doSwipeToDismissAnimation(viewportHeight, differenceY, this.yTransformValue, yVelocity);
+      }
+      else{
+          this.doResetAnimation(this.yTransformValue);
+      }
+    }
+}
 
 class TouchCoordinate {
     constructor(public x:number, public y:number){}
