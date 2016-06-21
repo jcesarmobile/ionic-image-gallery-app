@@ -44,7 +44,7 @@ export class GalleryPage {
     this.galleryLoaded = false;
   }
 
-  onPageWillEnter(){
+  ionViewWillEnter(){
     this.IMAGE_SIZE = this.setDimensions();
     if ( ! this.galleryLoaded ){
       this.loadGallery();

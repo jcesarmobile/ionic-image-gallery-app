@@ -58,7 +58,7 @@ export class PhotoViewer {
       this.imageEntity = this.navParams.data.imageEntity;
     }
 
-    onPageWillEnter(){
+    ionViewWillEnter(){
       //this.dragGesture = new CustomDragGesture(this.contentContainer, this, this.viewPortUtil);
       this.dragGesture = this.dragGestureRecognizerProvider.getGestureRecognizer(this.contentContainer, {threshold: 1, direction: GestureDirection.ALL});
       this.dragGesture.listen();
@@ -67,7 +67,7 @@ export class PhotoViewer {
       this.onPanEndSubscription = this.dragGesture.onPanEnd.subscribe(event => this.onDragEnd(event));
     }
 
-    onPageDidEnter(){
+    ionViewDidEnter(){
       // give a short buffer to make sure the transition is done
       setTimeout( () => {
           // DOM READ
@@ -77,7 +77,7 @@ export class PhotoViewer {
       }, 100);
     }
 
-    onPageWillLeave(){
+    ionViewWillLeave(){
       this.dragGesture.unlisten();
       this.dragGesture = null;
       this.onPanStartSubscription();
