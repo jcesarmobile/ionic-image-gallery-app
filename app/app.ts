@@ -1,10 +1,10 @@
 import {Component} from '@angular/core';
 import {ionicBootstrap, Platform} from 'ionic-angular';
 import {StatusBar} from 'ionic-native';
-import {GalleryPage} from './pages/gallery/GalleryPage';
-import {getProviders} from "./AppFactory";
+import {GalleryPage} from './pages/gallery/gallery-page';
+import {getProviders} from "./app-factory";
 
-import {TRANSITION_IN_KEY, TRANSITION_OUT_KEY} from "./pages/viewer/PhotoViewerTransition";
+import {TRANSITION_IN_KEY, TRANSITION_OUT_KEY} from "./pages/viewer/photo-viewer-transition";
 
 @Component({
   template: '<ion-nav [root]="rootPage"></ion-nav>',
