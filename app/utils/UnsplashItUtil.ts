@@ -15,9 +15,9 @@ export class UnsplashItUtil {
   getListOfImages(thumbnailSize:number):Promise<ImageEntity[]>{
     return this.http.get(`${URL}/list`).map(res => res.json()).toPromise().then(unsplashEntities => {
 
-        var imageEntities:ImageEntity[] = [];
+        let imageEntities:ImageEntity[] = [];
         unsplashEntities.forEach(unsplashEntity => {
-            var imageEntity = new ImageEntity(unsplashEntity.id,
+            let imageEntity = new ImageEntity(unsplashEntity.id,
                             `${URL}/${thumbnailSize}?image=${unsplashEntity.id}`,
                             `${URL}/800?image=${unsplashEntity.id}`,
                             `${URL}/2000?image=${unsplashEntity.id}`);
@@ -26,13 +26,13 @@ export class UnsplashItUtil {
         return imageEntities;
      }).then(imageEntities => {
         // randomize the order
-        var randomArray = this.shuffleArray(imageEntities.concat([]));
+        let randomArray = this.shuffleArray(imageEntities.concat([]));
         return randomArray;
      });
   }
 
   shuffleArray(array):any[]{
-    var currentIndex = array.length, temporaryValue, randomIndex;
+    let currentIndex = array.length, temporaryValue, randomIndex;
 
     // While there remain elements to shuffle...
     while (0 !== currentIndex) {

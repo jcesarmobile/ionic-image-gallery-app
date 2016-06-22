@@ -179,9 +179,9 @@ export class PhotoViewer {
     onDrag(event:HammerInput):void{
       // calculate the difference between the coordinates
       this.mostRecentTouch = new TouchCoordinate(event.center.x, event.center.y);
-      var previousYTransform = this.yTransformValue;
+      let previousYTransform = this.yTransformValue;
       this.yTransformValue = this.mostRecentTouch.y - this.initialTouch.y;
-      var percentageDragged = Math.abs(this.yTransformValue)/this.viewPortUtil.getHeight();
+      let percentageDragged = Math.abs(this.yTransformValue)/this.viewPortUtil.getHeight();
       this.doMoveAnimation(previousYTransform, this.yTransformValue, percentageDragged);
     }
 
@@ -191,8 +191,8 @@ export class PhotoViewer {
       // otherwise, reset to the original position
       let yVelocity = Math.abs(event.velocity);
       let viewportHeight = this.viewPortUtil.getHeight();
-      var differenceY = this.mostRecentTouch.y - this.initialTouch.y;
-      var percentageDragged = Math.abs(differenceY)/viewportHeight;
+      let differenceY = this.mostRecentTouch.y - this.initialTouch.y;
+      let percentageDragged = Math.abs(differenceY)/viewportHeight;
       if ( yVelocity > .2 || percentageDragged >= this.TOUCH_DISTANCE_TRAVELED_THRESHOLD ){
           this.doSwipeToDismissAnimation(viewportHeight, differenceY, this.yTransformValue, yVelocity);
       }

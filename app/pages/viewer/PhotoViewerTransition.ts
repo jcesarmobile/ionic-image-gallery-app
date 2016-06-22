@@ -19,7 +19,7 @@ export class TwitterStylePhotoInTransition extends Transition {
     let backdropAnimation = new Animation(backdrop);
     let contentContainerAnimation = new Animation(contentContainer);
 
-    var modalDimensions = getModalDimensions(opts.ev.viewportHeight, opts.ev.viewportWidth);
+    let modalDimensions = getModalDimensions(opts.ev.viewportHeight, opts.ev.viewportWidth);
 
     let scale = modalDimensions.useableWidth/opts.ev.width;
 
@@ -79,7 +79,7 @@ export class TwitterStylePhotoOutTransition extends Transition {
     let backdropAnimation = new Animation(backdrop);
     let contentContainerAnimation = new Animation(contentContainer);
 
-    var modalDimensions = getModalDimensions(opts.ev.viewportHeight, opts.ev.viewportWidth);
+    let modalDimensions = getModalDimensions(opts.ev.viewportHeight, opts.ev.viewportWidth);
 
     // figure out the scale to move to
     let scale = modalDimensions.useableWidth/opts.ev.width;

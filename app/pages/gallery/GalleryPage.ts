@@ -60,13 +60,13 @@ export class GalleryPage {
 
   setDimensions(){
     let screenWidth = this.viewPortUtil.getWidth();
-    var potentialNumColumns = Math.floor(screenWidth/120);
+    let potentialNumColumns = Math.floor(screenWidth/120);
     let NUM_COLUMNS = potentialNumColumns > this.MIN_NUM_COLUMNS ? potentialNumColumns : this.MIN_NUM_COLUMNS;
     return Math.floor(screenWidth/NUM_COLUMNS);
   }
 
   imageClicked(imageEntity:ImageEntity, event:Event){
-    var rect = (<HTMLElement>event.target).getBoundingClientRect();
+    let rect = (<HTMLElement>event.target).getBoundingClientRect();
     let modal = PhotoViewerViewController.create({
       imageEntity:imageEntity
     });
