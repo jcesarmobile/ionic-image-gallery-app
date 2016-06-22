@@ -12,13 +12,13 @@ export class DragGestureRecognizer extends GestureRecognizer {
   onPanMove: EventEmitter<HammerInput>;
   onPanEnd: EventEmitter<HammerInput>;
 
-  private _onPanStart: (event:HammerInput) => void;
-  private _onPanMove: (event:HammerInput) => void;
-  private _onPanEnd: (event:HammerInput) => void;
+  private _onPanStart: (event: HammerInput) => void;
+  private _onPanMove: (event: HammerInput) => void;
+  private _onPanEnd: (event: HammerInput) => void;
 
-  protected self : DragGestureRecognizer;
+  protected self: DragGestureRecognizer;
 
-  constructor(elementRef:ElementRef, options:DragGestureRecognizerOptions){
+  constructor(elementRef: ElementRef, options: DragGestureRecognizerOptions) {
     options.direction = options.direction ? options.direction : GestureDirection.ALL;
     options.threshold = options.threshold ? options.threshold : DEFAULT_THRESHOLD;
     super(elementRef, new hammer.Pan(options));
@@ -28,16 +28,15 @@ export class DragGestureRecognizer extends GestureRecognizer {
     this.self = this;
   }
 
-  listen(){
+  listen() {
     super.listen();
-    //this._hammerManager.on('panstart', this._onPanStartHandler);
-    this._onPanStart = (event:HammerInput) => {
+    this._onPanStart = (event: HammerInput) => {
       this.onPanStart.emit(event);
     };
-    this._onPanMove = (event:HammerInput) => {
+    this._onPanMove = (event: HammerInput) => {
       this.onPanMove.emit(event);
     };
-    this._onPanEnd = (event:HammerInput) => {
+    this._onPanEnd = (event: HammerInput) => {
       this.onPanEnd.emit(event);
     };
     this._hammerManager.on('panstart', this._onPanStart);
@@ -45,7 +44,7 @@ export class DragGestureRecognizer extends GestureRecognizer {
     this._hammerManager.on('panend', this._onPanEnd);
   }
 
-  unlisten(){
+  unlisten() {
     this._hammerManager.off('panstart', this._onPanStart);
     this._hammerManager.off('panmove', this._onPanMove);
     this._hammerManager.off('panend', this._onPanEnd);
@@ -54,6 +53,6 @@ export class DragGestureRecognizer extends GestureRecognizer {
 }
 
 export interface DragGestureRecognizerOptions {
-  threshold?: number,
-  direction?: GestureDirection
-}
+  threshold?: number;
+  direction?: GestureDirection;
+};

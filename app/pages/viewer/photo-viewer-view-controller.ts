@@ -1,5 +1,5 @@
-import {ViewController} from "ionic-angular";
-import {PhotoViewer} from "./photo-viewer";
+import {ViewController} from 'ionic-angular';
+import {PhotoViewer} from './photo-viewer';
 
 export class PhotoViewerViewController extends ViewController {
 

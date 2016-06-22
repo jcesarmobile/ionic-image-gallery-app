@@ -1,20 +1,20 @@
-import {Injectable} from "@angular/core";
+import {Injectable} from '@angular/core';
 
 @Injectable()
-export class ViewPortUtil{
-  private _width :number;
-  private _height :number;
+export class ViewPortUtil {
+  private _width: number;
+  private _height: number;
 
-  constructor(){
+  constructor() {
       this._width = window.innerWidth;
       this._height = window.innerHeight;
   }
 
-  getHeight():number{
+  getHeight(): number {
     return this._height;
   }
 
-  getWidth():number{
+  getWidth(): number {
     return this._width;
   }
 }

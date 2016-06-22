@@ -8,33 +8,33 @@
 // App Shared Sass variables belong in app.variables.scss.
 
 .inline-block{
-    display: inline-block;
+  display: inline-block;
 }
 
 .show-cursor{
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .image-container{
-    display: inline-block;
-    padding: 10px;
+  display: inline-block;
+  padding: 10px;
 }
 
 .image{
-    background-color: grey;
-    height: 100%;
+  background-color: grey;
+  height: 100%;
 }
 
 .contentContainer {
-    height: 100%;
+  height: 100%;
 
-    @media only screen and (min-width: 768px) and (min-height: 768px) {
-      position: absolute;
-      top: calc(50% - (700px/2);
-      left: calc(50% - (700px/2);
-      width: 700px;
-      height: 700px;
-    }
+  @media only screen and (min-width: 768px) and (min-height: 768px) {
+    position: absolute;
+    top: calc(50% - (700px/2);
+    left: calc(50% - (700px/2);
+    width: 700px;
+    height: 700px;
+  }
 }
 
 .wrapper{
@@ -53,4 +53,12 @@
 
 .btn-container{
   float: right;
+}
+
+.transparent{
+  background-color: transparent;
+}
+
+.no-pointers{
+  pointer-events: none;
 }

@@ -1,21 +1,21 @@
-import {Injectable} from "@angular/core";
+import {Injectable} from '@angular/core';
 import {Http} from '@angular/http';
-import "rxjs/add/operator/map";
-import "rxjs/add/operator/toPromise";
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/toPromise';
 
-import {ImageEntity} from "./image-entity";
+import {ImageEntity} from './image-entity';
 
-const URL:string = "https://unsplash.it";
+const URL: string = 'https://unsplash.it';
 
 @Injectable()
 export class UnsplashItUtil {
   constructor(private http: Http) {
   }
 
-  getListOfImages(thumbnailSize:number):Promise<ImageEntity[]>{
+  getListOfImages(thumbnailSize: number): Promise<ImageEntity[]> {
     return this.http.get(`${URL}/list`).map(res => res.json()).toPromise().then(unsplashEntities => {
 
-        let imageEntities:ImageEntity[] = [];
+        let imageEntities: ImageEntity[] = [];
         unsplashEntities.forEach(unsplashEntity => {
             let imageEntity = new ImageEntity(unsplashEntity.id,
                             `${URL}/${thumbnailSize}?image=${unsplashEntity.id}`,
@@ -31,7 +31,7 @@ export class UnsplashItUtil {
      });
   }
 
-  shuffleArray(array):any[]{
+  shuffleArray(array): any[] {
     let currentIndex = array.length, temporaryValue, randomIndex;
 
     // While there remain elements to shuffle...

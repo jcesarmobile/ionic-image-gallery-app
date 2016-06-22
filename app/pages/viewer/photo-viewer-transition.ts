@@ -1,8 +1,8 @@
-import {ElementRef} from "@angular/core";
-import {Animation, Transition, TransitionOptions, ViewController} from "ionic-angular";
+import {ElementRef} from '@angular/core';
+import {Animation, Transition, TransitionOptions, ViewController} from 'ionic-angular';
 
-export const TRANSITION_IN_KEY:string = "photoViewerEnter";
-export const TRANSITION_OUT_KEY:string = "photoViewerLeave";
+export const TRANSITION_IN_KEY: string = 'photoViewerEnter';
+export const TRANSITION_OUT_KEY: string = 'photoViewerLeave';
 
 export class TwitterStylePhotoInTransition extends Transition {
   constructor(enteringView: ViewController, leavingView: ViewController, opts: TransitionOptions) {
@@ -10,10 +10,9 @@ export class TwitterStylePhotoInTransition extends Transition {
 
     // DOM READS
     let ele = <HTMLElement> enteringView.pageRef().nativeElement;
-    ele.classList.add("show-page");
-    let image = <HTMLElement> ele.querySelector(".scaled-image");
-    let backdrop = ele.querySelector("ion-backdrop");
-    let contentContainer = ele.querySelector(".contentContainer");
+    let image = <HTMLElement> ele.querySelector('.scaled-image');
+    let backdrop = ele.querySelector('ion-backdrop');
+    let contentContainer = ele.querySelector('.contentContainer');
     let contentContainerRect = contentContainer.getBoundingClientRect();
     let imageAnimation = new Animation(image);
     let backdropAnimation = new Animation(backdrop);
@@ -21,19 +20,19 @@ export class TwitterStylePhotoInTransition extends Transition {
 
     let modalDimensions = getModalDimensions(opts.ev.viewportHeight, opts.ev.viewportWidth);
 
-    let scale = modalDimensions.useableWidth/opts.ev.width;
+    let scale = modalDimensions.useableWidth / opts.ev.width;
 
-    let centeredXOffset = (modalDimensions.totalWidth - modalDimensions.useableWidth)/2;
-    let rectangleCenterX = opts.ev.startX + (opts.ev.width/2);
+    let centeredXOffset = (modalDimensions.totalWidth - modalDimensions.useableWidth) / 2;
+    let rectangleCenterX = opts.ev.startX + (opts.ev.width / 2);
     let scaledRectangleWidth = opts.ev.width * scale;
-    let scaledLeftEdge = rectangleCenterX - scaledRectangleWidth/2;
-    let xTransform = (0 - scaledLeftEdge + centeredXOffset + contentContainerRect.left)/scale;
+    let scaledLeftEdge = rectangleCenterX - (scaledRectangleWidth / 2);
+    let xTransform = (0 - scaledLeftEdge + centeredXOffset + contentContainerRect.left) / scale;
 
-    let centeredYOffset = (modalDimensions.totalHeight - modalDimensions.useableHeight)/2;
-    let rectangleCenterY = opts.ev.startY + (opts.ev.height/2);
+    let centeredYOffset = (modalDimensions.totalHeight - modalDimensions.useableHeight) / 2;
+    let rectangleCenterY = opts.ev.startY + (opts.ev.height / 2);
     let scaledRectangleHeight = opts.ev.height * scale;
-    let centerY = modalDimensions.useableHeight/2;
-    let yDifference = (centerY - rectangleCenterY + centeredYOffset + contentContainerRect.top)/scale;
+    let centerY = modalDimensions.useableHeight / 2;
+    let yDifference = (centerY - rectangleCenterY + centeredYOffset + contentContainerRect.top) / scale;
 
     // we can skip some complicated math if we store this to re-use later
     opts.ev.transitionData = {
@@ -44,7 +43,7 @@ export class TwitterStylePhotoInTransition extends Transition {
 
 
     // DOM writes
-    image.style.position = "absolute";
+    image.style.position = 'absolute';
     image.style.top = `${opts.ev.startY}px`;
     image.style.left = `${opts.ev.startX}px`;
     image.style.width = `${opts.ev.width}px`;
@@ -72,9 +71,9 @@ export class TwitterStylePhotoOutTransition extends Transition {
 
     // DOM reads
     let ele = leavingView.pageRef().nativeElement;
-    let image = ele.querySelector(".scaled-image");
-    let backdrop = ele.querySelector("ion-backdrop");
-    let contentContainer = ele.querySelector(".contentContainer");
+    let image = ele.querySelector('.scaled-image');
+    let backdrop = ele.querySelector('ion-backdrop');
+    let contentContainer = ele.querySelector('.contentContainer');
     let imageAnimation = new Animation(image);
     let backdropAnimation = new Animation(backdrop);
     let contentContainerAnimation = new Animation(contentContainer);
@@ -82,10 +81,10 @@ export class TwitterStylePhotoOutTransition extends Transition {
     let modalDimensions = getModalDimensions(opts.ev.viewportHeight, opts.ev.viewportWidth);
 
     // figure out the scale to move to
-    let scale = modalDimensions.useableWidth/opts.ev.width;
+    let scale = modalDimensions.useableWidth / opts.ev.width;
 
     // DOM writes
-    if ( !opts.ev.skipImageTransition ){
+    if ( !opts.ev.skipImageTransition ) {
       imageAnimation.fromTo('scale', `${scale}`, `${1.0}`);
       imageAnimation.fromTo('translateX', `${opts.ev.transitionData.xTransform}px`, `${0}px`);
       imageAnimation.fromTo('translateY', `${opts.ev.transitionData.yDifference}px`, `${0}px`);
@@ -101,16 +100,16 @@ export class TwitterStylePhotoOutTransition extends Transition {
 }
 
 // provide these values to avoid a dom read
-export function getModalDimensions(viewportHeight:number, viewportWidth:number){
+export function getModalDimensions(viewportHeight: number, viewportWidth: number) {
   const MIN_WIDTH_INSET = 768;
   const MIN_LARGE_HEIGHT_INSET = 768;
   const INSET_MODAL_WIDTH = 700;
   const INSET_MODAL_HEIGHT = 700;
 
-  if ( viewportHeight >= MIN_WIDTH_INSET && viewportWidth >= MIN_LARGE_HEIGHT_INSET ){
+  if ( viewportHeight >= MIN_WIDTH_INSET && viewportWidth >= MIN_LARGE_HEIGHT_INSET ) {
     return {
       totalWidth: INSET_MODAL_WIDTH,
-      totalHeight:INSET_MODAL_HEIGHT,
+      totalHeight: INSET_MODAL_HEIGHT,
       useableWidth: INSET_MODAL_WIDTH - 100,
       useableHeight: INSET_MODAL_HEIGHT - 100
     };

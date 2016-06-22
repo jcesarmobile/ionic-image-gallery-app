@@ -5,10 +5,10 @@ export class GestureRecognizer {
     protected _listening: boolean;
     protected _hammerManager: HammerManager;
 
-    constructor(protected element: ElementRef, protected recognizer: AttrRecognizer){
+    constructor(protected element: ElementRef, protected recognizer: AttrRecognizer) {
     }
 
-    listen(){
+    listen() {
       if (! this._listening ) {
         this._hammerManager = new hammer.Manager(this.element.nativeElement);
         this._hammerManager.add(this.recognizer);
@@ -16,7 +16,7 @@ export class GestureRecognizer {
       this._listening = true;
     }
 
-    unlisten(){
+    unlisten() {
       this._listening = false;
       this._hammerManager.remove(this.recognizer);
       this.recognizer = null;

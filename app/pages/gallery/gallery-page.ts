@@ -1,12 +1,12 @@
-import {Component} from "@angular/core";
-import {Alert, NavController} from "ionic-angular";
+import {Component} from '@angular/core';
+import {NavController} from 'ionic-angular';
 
-import {PhotoViewerViewController} from "../viewer/photo-viewer-view-controller";
-import {PhotoViewer} from "../viewer/photo-viewer";
-import {TRANSITION_IN_KEY} from "../viewer/photo-viewer-transition";
-import {UnsplashItUtil} from "../../utils/unsplash-it-util";
-import {ViewPortUtil} from "../../utils/viewport-util";
-import {ImageEntity} from "../../utils/image-entity";
+import {PhotoViewerViewController} from '../viewer/photo-viewer-view-controller';
+import {PhotoViewer} from '../viewer/photo-viewer';
+import {TRANSITION_IN_KEY} from '../viewer/photo-viewer-transition';
+import {UnsplashItUtil} from '../../utils/unsplash-it-util';
+import {ViewPortUtil} from '../../utils/viewport-util';
+import {ImageEntity} from '../../utils/image-entity';
 
 @Component({
   template: `
@@ -22,7 +22,7 @@ import {ImageEntity} from "../../utils/image-entity";
 
       <div [virtualScroll]="images">
         <div *virtualItem="let imageEntity" class="image-container"
-          [style.width]="IMAGE_SIZE + 'px'" [style.height]="IMAGE_SIZE + 'px'"
+          [style.width]="imageSize + 'px'" [style.height]="imageSize + 'px'"
           (click)="imageClicked(imageEntity, $event)">
           <ion-img [src]="imageEntity.mediumSizeUrl" class="image" tappable></ion-img>
         </div>
@@ -32,45 +32,40 @@ import {ImageEntity} from "../../utils/image-entity";
 })
 export class GalleryPage {
 
-  private images:ImageEntity[];
-  private NUM_IMAGES:number = 500;
-  private MIN_NUM_COLUMNS:number = 3;
-  private MARGIN:number = 10;
-  private IMAGE_SIZE:number;
-  private galleryLoaded:boolean;
+  private images: ImageEntity[] = [];
+  private imageSize: number;
+  private galleryLoaded: boolean = false;
 
-  constructor(private navController:NavController, private unsplashItUtil:UnsplashItUtil, private viewPortUtil:ViewPortUtil) {
-    this.images = [];
-    this.galleryLoaded = false;
+  constructor(private nav: NavController, private unsplashItUtil: UnsplashItUtil, private viewPortUtil: ViewPortUtil) {
   }
 
-  ionViewWillEnter(){
-    this.IMAGE_SIZE = this.setDimensions();
-    if ( ! this.galleryLoaded ){
+  ionViewWillEnter() {
+    this.imageSize = this.setDimensions();
+    if ( ! this.galleryLoaded ) {
       this.loadGallery();
     }
   }
 
-  loadGallery(){
+  loadGallery() {
     this.galleryLoaded = true;
-    this.unsplashItUtil.getListOfImages(this.IMAGE_SIZE).then(imageEntities =>{
+    this.unsplashItUtil.getListOfImages(this.imageSize).then(imageEntities => {
       this.images = imageEntities;
     });
   }
 
-  setDimensions(){
+  setDimensions() {
     let screenWidth = this.viewPortUtil.getWidth();
-    let potentialNumColumns = Math.floor(screenWidth/120);
-    let NUM_COLUMNS = potentialNumColumns > this.MIN_NUM_COLUMNS ? potentialNumColumns : this.MIN_NUM_COLUMNS;
-    return Math.floor(screenWidth/NUM_COLUMNS);
+    let potentialNumColumns = Math.floor(screenWidth / 120);
+    let numColumns = potentialNumColumns > MIN_NUM_COLUMNS ? potentialNumColumns : MIN_NUM_COLUMNS;
+    return Math.floor(screenWidth / numColumns);
   }
 
-  imageClicked(imageEntity:ImageEntity, event:Event){
-    let rect = (<HTMLElement>event.target).getBoundingClientRect();
+  imageClicked(imageEntity: ImageEntity, event: Event) {
+    let rect = (<HTMLElement> event.target).getBoundingClientRect();
     let modal = PhotoViewerViewController.create({
-      imageEntity:imageEntity
+      imageEntity: imageEntity
     });
-    this.navController.present(modal, {
+    this.nav.present(modal, {
       ev: {
         startX: rect.left,
         startY: rect.top,
@@ -82,3 +77,7 @@ export class GalleryPage {
     });
   }
 }
+
+const NUM_IMAGES: number = 500;
+const MIN_NUM_COLUMNS: number = 3;
+const MARGIN: number = 10;
