@@ -5,7 +5,6 @@ export class PhotoViewerViewController extends ViewController {
 
   constructor(opts: any = {}) {
     super(PhotoViewer, opts);
-    this.viewType = 'photoViewer';
     this.isOverlay = true;
     this.usePortal = true;
 

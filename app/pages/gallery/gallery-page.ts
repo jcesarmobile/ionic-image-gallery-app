@@ -10,15 +10,17 @@ import {ImageEntity} from '../../utils/image-entity';
 
 @Component({
   template: `
-    <ion-navbar *navbar primary>
-        <ion-title>Image Gallery</ion-title>
-        <ion-buttons end>
-            <button (press)="loadGallery()">
-                <ion-icon name="refresh"></ion-icon>
-            </button>
-        </ion-buttons>
-    </ion-navbar>
-    <ion-content>
+    <ion-header class="transparent-header">
+      <ion-navbar primary>
+          <ion-title>Image Gallery</ion-title>
+          <ion-buttons end>
+              <button (press)="loadGallery()">
+                  <ion-icon name="refresh"></ion-icon>
+              </button>
+          </ion-buttons>
+      </ion-navbar>
+    </ion-header>
+    <ion-content fullscreen="true">
 
       <div [virtualScroll]="images">
         <div *virtualItem="let imageEntity" class="image-container"

@@ -6,10 +6,11 @@ export const TRANSITION_OUT_KEY: string = 'photoViewerLeave';
 
 export class TwitterStylePhotoInTransition extends Transition {
   constructor(enteringView: ViewController, leavingView: ViewController, opts: TransitionOptions) {
-    super(opts);
+    super(enteringView, leavingView, opts);
 
     // DOM READS
     let ele = <HTMLElement> enteringView.pageRef().nativeElement;
+    ele.classList.add('show-page');
     let image = <HTMLElement> ele.querySelector('.scaled-image');
     let backdrop = ele.querySelector('ion-backdrop');
     let contentContainer = ele.querySelector('.contentContainer');
@@ -67,7 +68,7 @@ export class TwitterStylePhotoInTransition extends Transition {
 }
 export class TwitterStylePhotoOutTransition extends Transition {
   constructor(enteringView: ViewController, leavingView: ViewController, opts: TransitionOptions) {
-    super(opts);
+    super(enteringView, leavingView, opts);
 
     // DOM reads
     let ele = leavingView.pageRef().nativeElement;
