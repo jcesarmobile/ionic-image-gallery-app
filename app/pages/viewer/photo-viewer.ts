@@ -1,6 +1,7 @@
 import {ElementRef, ViewChild, Component} from '@angular/core';
 import {Animation, DragGesture, NavParams, ViewController} from 'ionic-angular';
 
+import {PhotoViewerViewController} from './photo-viewer-view-controller';
 import {getModalDimensions} from './photo-viewer-transition';
 
 import {ImageEntity} from '../../utils/image-entity';
@@ -135,6 +136,9 @@ export class PhotoViewer {
       if ( time > 300 ) {
         time = 300;
       }
+      let backdropAnimation = new Animation(this.backdrop, {renderDelay: 0});
+      backdropAnimation.fromTo('opacity', this.backdrop.nativeElement.style.opacity, `0.00`);
+      animation.add(backdropAnimation);
       animation.duration(time).easing('ease').play();
     }
 
@@ -188,9 +192,10 @@ export class PhotoViewer {
       let differenceY = this.mostRecentTouch.y - this.initialTouch.y;
       let percentageDragged = Math.abs(differenceY) / viewportHeight;
       if ( yVelocity > VELOCITY_THRESHOLD || percentageDragged >= TOUCH_DISTANCE_TRAVELED_THRESHOLD ) {
-          this.doSwipeToDismissAnimation(viewportHeight, differenceY, this.yTransformValue, yVelocity);
+        (<PhotoViewerViewController> this.viewController).isAlreadyDismissed = true;
+        this.doSwipeToDismissAnimation(viewportHeight, differenceY, this.yTransformValue, yVelocity);
       } else {
-          this.doResetAnimation(this.yTransformValue);
+        this.doResetAnimation(this.yTransformValue);
       }
     }
 }

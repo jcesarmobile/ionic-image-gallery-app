@@ -3,6 +3,8 @@ import {PhotoViewer} from './photo-viewer';
 
 export class PhotoViewerViewController extends ViewController {
 
+  public isAlreadyDismissed: boolean;
+
   constructor(opts: any = {}) {
     super(PhotoViewer, opts);
     this.isOverlay = true;

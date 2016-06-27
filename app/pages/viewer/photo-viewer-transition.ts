@@ -1,6 +1,8 @@
 import {ElementRef} from '@angular/core';
 import {Animation, Transition, TransitionOptions, ViewController} from 'ionic-angular';
 
+import {PhotoViewerViewController} from './photo-viewer-view-controller';
+
 export const TRANSITION_IN_KEY: string = 'photoViewerEnter';
 export const TRANSITION_OUT_KEY: string = 'photoViewerLeave';
 
@@ -67,36 +69,39 @@ export class TwitterStylePhotoInTransition extends Transition {
   }
 }
 export class TwitterStylePhotoOutTransition extends Transition {
-  constructor(enteringView: ViewController, leavingView: ViewController, opts: TransitionOptions) {
+  constructor(enteringView: ViewController, leavingView: PhotoViewerViewController, opts: TransitionOptions) {
     super(enteringView, leavingView, opts);
 
-    // DOM reads
-    let ele = leavingView.pageRef().nativeElement;
-    let image = ele.querySelector('.scaled-image');
-    let backdrop = ele.querySelector('ion-backdrop');
-    let contentContainer = ele.querySelector('.contentContainer');
-    let imageAnimation = new Animation(image);
-    let backdropAnimation = new Animation(backdrop);
-    let contentContainerAnimation = new Animation(contentContainer);
+    // if we did a swipe to dismiss, skip this transition
+    if ( ! leavingView.isAlreadyDismissed ) {
+      // DOM reads
+      let ele = leavingView.pageRef().nativeElement;
+      let image = ele.querySelector('.scaled-image');
+      let backdrop = ele.querySelector('ion-backdrop');
+      let contentContainer = ele.querySelector('.contentContainer');
+      let imageAnimation = new Animation(image);
+      let backdropAnimation = new Animation(backdrop);
+      let contentContainerAnimation = new Animation(contentContainer);
 
-    let modalDimensions = getModalDimensions(opts.ev.viewportHeight, opts.ev.viewportWidth);
+      let modalDimensions = getModalDimensions(opts.ev.viewportHeight, opts.ev.viewportWidth);
 
-    // figure out the scale to move to
-    let scale = modalDimensions.useableWidth / opts.ev.width;
+      // figure out the scale to move to
+      let scale = modalDimensions.useableWidth / opts.ev.width;
 
-    // DOM writes
-    if ( !opts.ev.skipImageTransition ) {
-      imageAnimation.fromTo('scale', `${scale}`, `${1.0}`);
-      imageAnimation.fromTo('translateX', `${opts.ev.transitionData.xTransform}px`, `${0}px`);
-      imageAnimation.fromTo('translateY', `${opts.ev.transitionData.yDifference}px`, `${0}px`);
+      // DOM writes
+      if ( !opts.ev.skipImageTransition ) {
+        imageAnimation.fromTo('scale', `${scale}`, `${1.0}`);
+        imageAnimation.fromTo('translateX', `${opts.ev.transitionData.xTransform}px`, `${0}px`);
+        imageAnimation.fromTo('translateY', `${opts.ev.transitionData.yDifference}px`, `${0}px`);
+      }
+      backdropAnimation.fromTo('opacity', `${backdrop.style.opacity}`, '0.01');
+      contentContainerAnimation.fromTo('opacity', `${contentContainer.style.opacity}`, '0.01');
+
+      this.element(enteringView.pageRef()).easing('ease').duration(300)
+        .add(imageAnimation)
+        .add(backdropAnimation)
+        .add(contentContainerAnimation);
     }
-    backdropAnimation.fromTo('opacity', `${backdrop.style.opacity}`, '0.01');
-    contentContainerAnimation.fromTo('opacity', `${contentContainer.style.opacity}`, '0.01');
-
-    this.element(enteringView.pageRef()).easing('ease').duration(300)
-      .add(imageAnimation)
-      .add(backdropAnimation)
-      .add(contentContainerAnimation);
   }
 }
 
