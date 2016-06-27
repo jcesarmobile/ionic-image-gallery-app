@@ -102,6 +102,10 @@ export class TwitterStylePhotoOutTransition extends Transition {
         .add(backdropAnimation)
         .add(contentContainerAnimation);
     }
+    else{
+      // the animation is done, but the transition still needs to run, so let's just fake it
+      this.element(enteringView.pageRef()).duration(1);
+    }
   }
 }
 
