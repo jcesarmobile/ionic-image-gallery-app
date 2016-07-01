@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {NavController} from 'ionic-angular';
 
-import {PhotoViewerViewController} from '../viewer/photo-viewer-view-controller';
+import {PhotoViewerController} from '../viewer/photo-viewer-view-controller';
 import {PhotoViewer} from '../viewer/photo-viewer';
 import {TRANSITION_IN_KEY} from '../viewer/photo-viewer-transition';
 import {UnsplashItUtil} from '../../utils/unsplash-it-util';
@@ -38,7 +38,7 @@ export class GalleryPage {
   private imageSize: number;
   private galleryLoaded: boolean = false;
 
-  constructor(private nav: NavController, private unsplashItUtil: UnsplashItUtil, private viewPortUtil: ViewPortUtil) {
+  constructor(private nav: NavController, private photoViewerController: PhotoViewerController, private unsplashItUtil: UnsplashItUtil, private viewPortUtil: ViewPortUtil) {
   }
 
   ionViewWillEnter() {
@@ -64,10 +64,10 @@ export class GalleryPage {
 
   imageClicked(imageEntity: ImageEntity, event: Event) {
     let rect = (<HTMLElement> event.target).getBoundingClientRect();
-    let modal = PhotoViewerViewController.create({
+    let modal = this.photoViewerController.create({
       imageEntity: imageEntity
     });
-    this.nav.present(modal, {
+    modal.present({
       ev: {
         startX: rect.left,
         startY: rect.top,
