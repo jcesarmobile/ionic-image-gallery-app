@@ -10,6 +10,33 @@
   <link ios-href="build/css/app.ios.css" rel="stylesheet">
   <link md-href="build/css/app.md.css" rel="stylesheet">
   <link wp-href="build/css/app.wp.css" rel="stylesheet">
+
+  <!--manifest.json-->
+  <link rel="manifest" href="manifest.json">
+  
+  <!--old chrome/safari support-->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="apple-touch-icon" sizes="144x144" href="img/appicon.png">
+
+  <!-- ionic dynamically decides which stylesheet to load -->
+  <link ios-href="build/css/app.ios.css" rel="stylesheet">
+  <link md-href="build/css/app.md.css" rel="stylesheet">
+  <link wp-href="build/css/app.wp.css" rel="stylesheet">
+  
+  <!--theme color-->
+  <meta name="theme-color" content="#FFFFFF">
+  
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').then((registration) => {
+          // Registration was successful
+          console.log('ServiceWorker registration successful with scope: ', registration.scope);
+      }).catch((err) => {
+          // registration failed :(
+          console.log('ServiceWorker registration failed: ', err);
+      });
+    }
+  </script>
 </head>
 <body>
 

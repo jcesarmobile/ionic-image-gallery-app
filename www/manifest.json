@@ -1,0 +1,13 @@
+{
+  "name": "ionic-image-gallery",
+  "short_name": "Ionic-Gallery",
+  "start_url": "index.html",
+  "display": "standalone",
+  "icons": [{
+    "src": "img/appicon.png",
+    "size": "128x128",
+    "type": "image/png"
+  }],
+  "background_color": "#FFFFFF",
+  "theme_color": "#FFFFFF"
+}
