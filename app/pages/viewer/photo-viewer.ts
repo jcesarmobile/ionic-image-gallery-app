@@ -1,5 +1,5 @@
 import {Component, ElementRef, HostListener, ViewChild} from '@angular/core';
-import {Animation, DragGesture, NavParams, ViewController} from 'ionic-angular';
+import {Animation, NavParams, ViewController} from 'ionic-angular';
 
 import {PhotoViewerViewController} from './photo-viewer-view-controller';
 import {getModalDimensions} from './photo-viewer-transition';
