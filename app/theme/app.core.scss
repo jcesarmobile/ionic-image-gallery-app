@@ -66,3 +66,7 @@
 .no-pointers{
   pointer-events: none;
 }
+
+::-webkit-scrollbar {
+  display: none;
+}
