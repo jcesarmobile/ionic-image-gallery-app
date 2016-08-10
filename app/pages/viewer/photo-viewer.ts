@@ -1,16 +1,15 @@
-import {Component, ElementRef, HostListener, ViewChild} from '@angular/core';
-import {Animation, NavParams, ViewController} from 'ionic-angular';
+import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { Animation, NavParams, ViewController } from 'ionic-angular';
 
-import {PhotoViewerViewController} from './photo-viewer-view-controller';
-import {getModalDimensions} from './photo-viewer-transition';
+import { PhotoViewerViewController } from './photo-viewer-view-controller';
+import { getModalDimensions } from './photo-viewer-transition';
 
-import {ImageEntity} from '../../utils/image-entity';
-import {UnsplashItUtil} from '../../utils/unsplash-it-util';
-import {ViewPortUtil} from '../../utils/viewport-util';
+import { ImageEntity } from '../../utils/image-entity';
+import { UnsplashItUtil } from '../../utils/unsplash-it-util';
+import { ViewPortUtil } from '../../utils/viewport-util';
 
-import {GestureDirection} from '../../utils/gestures/gesture-direction';
-import {DragGestureRecognizer} from '../../utils/gestures/drag-gesture-recognizer';
-import {DragGestureRecognizerProvider} from '../../utils/gestures/drag-gesture-recognizer-provider';
+import { GestureDirection } from '../../utils/gestures/gesture-direction';
+import { PanGesture, PanGestureController } from '../../utils/gestures/pan-gesture';
 
 @Component({
   template: `
@@ -36,15 +35,11 @@ export class PhotoViewer {
 
   private imageEntity: ImageEntity;
   private contentContainerRect: any;
-  private dragGesture: DragGestureRecognizer;
+  private panGesture: PanGesture;
 
   private initialTouch: TouchCoordinate;
   private mostRecentTouch: TouchCoordinate;
   private yTransformValue: number;
-
-  private onPanStartSubscription: any;
-  private onPanMoveSubscription: any;
-  private onPanEndSubscription: any;
 
   private enabled: boolean;
 
@@ -55,16 +50,15 @@ export class PhotoViewer {
   @ViewChild('scaledImage') scaledImageEle: ElementRef;
   @ViewChild('nonScaledImage') nonScaledImageEle: ElementRef;
 
-  constructor(private navParams: NavParams, private viewController: ViewController, private viewPortUtil: ViewPortUtil, private dragGestureRecognizerProvider: DragGestureRecognizerProvider) {
+  constructor(private navParams: NavParams, private viewController: ViewController, private viewPortUtil: ViewPortUtil, private panGestureController: PanGestureController) {
     this.imageEntity = this.navParams.data.imageEntity;
   }
 
   ionViewWillEnter() {
-    this.dragGesture = this.dragGestureRecognizerProvider.getGestureRecognizer(this.contentContainer, {threshold: 1, direction: GestureDirection.ALL});
-    this.dragGesture.listen();
-    this.onPanStartSubscription = this.dragGesture.onPanStart.subscribe(event => this.onDragStart(event));
-    this.onPanMoveSubscription = this.dragGesture.onPanMove.subscribe(event => this.onDrag(event));
-    this.onPanEndSubscription = this.dragGesture.onPanEnd.subscribe(event => this.onDragEnd(event));
+    this.panGesture = this.panGestureController.create(this.contentContainer, {threshold: 1, direction: GestureDirection.ALL});
+    this.panGesture.onPanStart( (event) => { this.onDragStart(event) } );
+    this.panGesture.onPanMove( (event) => { this.onDrag(event) } );
+    this.panGesture.onPanEnd( (event) => { this.onDragEnd(event) } );
   }
 
   ionViewDidEnter() {
@@ -79,11 +73,8 @@ export class PhotoViewer {
   }
 
   ionViewWillLeave() {
-    this.dragGesture.unlisten();
-    this.dragGesture = null;
-    this.onPanStartSubscription();
-    this.onPanMoveSubscription();
-    this.onPanEndSubscription();
+    this.panGesture.unlisten();
+    this.panGesture = null;
   }
 
   showHighResImage() {
@@ -190,7 +181,7 @@ export class PhotoViewer {
     // figure out if the percentage of the distance traveled exceeds the threshold
     // if it does, dismiss the window,
     // otherwise, reset to the original position
-    let yVelocity = Math.abs(event.velocity);
+    let yVelocity = Math.abs(event.velocityY);
     let viewportHeight = this.viewPortUtil.getHeight();
     let differenceY = this.mostRecentTouch.y - this.initialTouch.y;
     let percentageDragged = Math.abs(differenceY) / viewportHeight;

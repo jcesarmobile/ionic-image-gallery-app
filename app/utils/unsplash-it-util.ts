@@ -32,6 +32,7 @@ export class UnsplashItUtil {
   }
 
   shuffleArray(array): any[] {
+    // found this on google
     let currentIndex = array.length, temporaryValue, randomIndex;
 
     // While there remain elements to shuffle...

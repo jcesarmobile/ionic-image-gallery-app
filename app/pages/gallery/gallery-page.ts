@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, HostListener} from '@angular/core';
 import {NavController} from 'ionic-angular';
 
 import {PhotoViewerController} from '../viewer/photo-viewer-view-controller';
@@ -42,10 +42,15 @@ export class GalleryPage {
   }
 
   ionViewWillEnter() {
-    this.imageSize = this.setDimensions();
+    this.setImageSize();
     if ( ! this.galleryLoaded ) {
       this.loadGallery();
     }
+  }
+
+  setImageSize() {
+    this.imageSize = this.setDimensions();
+    console.log("image size: ", this.imageSize);
   }
 
   loadGallery() {
@@ -59,6 +64,7 @@ export class GalleryPage {
     let screenWidth = this.viewPortUtil.getWidth();
     let potentialNumColumns = Math.floor(screenWidth / 120);
     let numColumns = potentialNumColumns > MIN_NUM_COLUMNS ? potentialNumColumns : MIN_NUM_COLUMNS;
+    console.log("Num Columns: ", numColumns);
     return Math.floor(screenWidth / numColumns);
   }
 
@@ -77,6 +83,14 @@ export class GalleryPage {
         viewportWidth: this.viewPortUtil.getWidth()
       }
     });
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize() {
+    this.viewPortUtil.update();
+    this.setImageSize();
+    // force a new virtual layout
+    this.images = this.images.concat();
   }
 }
 

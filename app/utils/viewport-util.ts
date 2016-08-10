@@ -6,8 +6,7 @@ export class ViewPortUtil {
   private _height: number;
 
   constructor() {
-      this._width = window.innerWidth;
-      this._height = window.innerHeight;
+    this.update();
   }
 
   getHeight(): number {
@@ -16,5 +15,10 @@ export class ViewPortUtil {
 
   getWidth(): number {
     return this._width;
+  }
+
+  update() {
+    this._width = window.innerWidth;
+    this._height = window.innerHeight;
   }
 }

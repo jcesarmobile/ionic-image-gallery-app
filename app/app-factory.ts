@@ -1,10 +1,11 @@
 /* Utils */
-import {UnsplashItUtil} from './utils/unsplash-it-util';
-import {ViewPortUtil} from './utils/viewport-util';
+import { UnsplashItUtil } from './utils/unsplash-it-util';
+import { ViewPortUtil } from './utils/viewport-util';
 
-import {DragGestureRecognizerProvider} from './utils/gestures/drag-gesture-recognizer-provider';
+import { PanGestureController } from './utils/gestures/pan-gesture';
+import { HammerFactory } from './utils/gestures/hammer-factory';
 
-import {PhotoViewerController} from './pages/viewer/photo-viewer-view-controller';
+import { PhotoViewerController } from './pages/viewer/photo-viewer-view-controller';
 
 export const APP_PROVIDERS = [
   /* Utils */
@@ -12,7 +13,8 @@ export const APP_PROVIDERS = [
   ViewPortUtil,
 
   /* Gesture Recognizers */
-  DragGestureRecognizerProvider,
+  PanGestureController,
+  HammerFactory,
 
   /* Controllers */
   PhotoViewerController
