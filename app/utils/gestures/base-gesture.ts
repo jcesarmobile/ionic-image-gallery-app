@@ -1,7 +1,7 @@
 import * as Hammer from 'hammerjs';
-import {ElementRef} from '@angular/core';
-import {GestureController, GestureDelegate, GesturePriority} from 'ionic-angular';
-import {HammerFactory} from './hammer-factory';
+import { ElementRef } from '@angular/core';
+import { GestureController, GestureDelegate, GesturePriority } from 'ionic-angular';
+import { HammerFactory } from './hammer-factory';
 
 const POINTER_DOWN_EVENT_TYPE = 1;
 const POINTER_UP_EVENT_TYPE = 4;
