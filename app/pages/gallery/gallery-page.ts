@@ -1,4 +1,4 @@
-import {Component, HostListener} from '@angular/core';
+import {Component, ElementRef, HostListener, ViewChild} from '@angular/core';
 import {NavController} from 'ionic-angular';
 
 import {PhotoViewerController} from '../viewer/photo-viewer-view-controller';
@@ -20,9 +20,9 @@ import {ImageEntity} from '../../utils/image-entity';
           </ion-buttons>
       </ion-navbar>
     </ion-header>
-    <ion-content fullscreen="true">
+    <ion-content #content fullscreen="true">
 
-      <div [virtualScroll]="images">
+      <div [virtualScroll]="images" [approxItemHeight]="imageSize + 'px'" [approxItemWidth]="imageSize + 'px'" [bufferRatio]="5">
         <div *virtualItem="let imageEntity" class="image-container"
           [style.width]="imageSize + 'px'" [style.height]="imageSize + 'px'"
           (click)="imageClicked(imageEntity, $event)">
@@ -34,6 +34,7 @@ import {ImageEntity} from '../../utils/image-entity';
 })
 export class GalleryPage {
 
+  @ViewChild('content', { read: ElementRef}) contentRef: ElementRef;
   private images: ImageEntity[] = [];
   private imageSize: number;
   private galleryLoaded: boolean = false;
@@ -50,22 +51,24 @@ export class GalleryPage {
 
   setImageSize() {
     this.imageSize = this.setDimensions();
-    console.log("image size: ", this.imageSize);
   }
 
   loadGallery() {
     this.galleryLoaded = true;
     this.unsplashItUtil.getListOfImages(this.imageSize).then(imageEntities => {
       this.images = imageEntities;
+      for ( let image of this.images ) {
+        (<any>image).color = this.generateRandomColor();
+      }
     });
   }
 
   setDimensions() {
-    let screenWidth = this.viewPortUtil.getWidth();
-    let potentialNumColumns = Math.floor(screenWidth / 120);
-    let numColumns = potentialNumColumns > MIN_NUM_COLUMNS ? potentialNumColumns : MIN_NUM_COLUMNS;
-    console.log("Num Columns: ", numColumns);
-    return Math.floor(screenWidth / numColumns);
+    let contentWidth = this.contentRef.nativeElement.offsetWidth;
+    let potentialNumColumns = Math.floor(contentWidth / MIN_DESIRED_IMAGE_SIZE);
+    let calculatedNumColumns = Math.min(MAX_NUM_COLUMNS, potentialNumColumns);
+    let numColumns = Math.max(calculatedNumColumns, MIN_NUM_COLUMNS);
+    return Math.floor(contentWidth / numColumns);
   }
 
   imageClicked(imageEntity: ImageEntity, event: Event) {
@@ -92,8 +95,44 @@ export class GalleryPage {
     // force a new virtual layout
     this.images = this.images.concat();
   }
+
+  generateRandomColor(){
+    let value = Math.random() * 100;
+    if ( value < 10 ) {
+      return 'yellow';
+    }
+    else if ( value < 20 ) {
+      return 'red';
+    }
+    else if ( value < 30 ) {
+      return 'blue';
+    }
+    else if ( value < 40 ) {
+      return 'green';
+    }
+    else if ( value < 50 ) {
+      return 'rebeccapurple';
+    }
+    else if ( value < 60 ) {
+      return 'orange';
+    }
+    else if ( value < 70 ) {
+      return 'lime';
+    }
+    else if ( value < 80 ) {
+      return 'pink';
+    }
+    else if ( value < 90 ) {
+      return 'black';
+    }
+    else if ( value < 100 ) {
+      return 'grey';
+    }
+  }
 }
 
+const MIN_DESIRED_IMAGE_SIZE = 120;
 const NUM_IMAGES: number = 500;
 const MIN_NUM_COLUMNS: number = 3;
+const MAX_NUM_COLUMNS: number = 5;
 const MARGIN: number = 10;

@@ -23,10 +23,11 @@ import { PanGesture, PanGestureController } from '../../utils/gestures/pan-gestu
               </button>
             </div>
           </div>
-          <div class="contentContainer" #contentContainer>
-          </div>
-          <img class="scaled-image no-pointers" #scaledImage [src]="imageEntity?.mediumSizeUrl">
-          <img class="non-scaled-image no-pointers" #nonScaledImage>
+          <div class="contentContainer" #contentContainer></div>
+          <!--<img class="scaled-image no-pointers" #scaledImage [src]="imageEntity?.mediumSizeUrl">
+          <img class="non-scaled-image no-pointers" #nonScaledImage>-->
+          <div class="scaled-image no-pointers" #scaledImage style="background-color: red;"></div>
+          <div class="non-scaled-image no-pointers" #nonScaledImage style="background-color: green;"></div>
         </div>
     </ion-content>
   `

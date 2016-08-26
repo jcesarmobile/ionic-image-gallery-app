@@ -59,9 +59,9 @@ export class TwitterStylePhotoInTransition extends Transition {
     contentContainerAnimation.fromTo('opacity', '0.01', '1.0');
 
     this
-      .element(enteringView.pageRef())
-      .easing('ease')
-      .duration(300)
+      .element(enteringView.pageRef().nativeElement)
+      .easing('ease-in')
+      .duration(1000)
       .before.addClass('show-page')
       .add(imageAnimation)
       .add(backdropAnimation)
@@ -97,7 +97,7 @@ export class TwitterStylePhotoOutTransition extends Transition {
       backdropAnimation.fromTo('opacity', `${backdrop.style.opacity}`, '0.01');
       contentContainerAnimation.fromTo('opacity', `${contentContainer.style.opacity}`, '0.01');
 
-      this.element(enteringView.pageRef()).easing('ease').duration(300)
+      this.element(enteringView.pageRef().nativeElement).easing('ease-in').duration(1000)
         .add(imageAnimation)
         .add(backdropAnimation)
         .add(contentContainerAnimation);
